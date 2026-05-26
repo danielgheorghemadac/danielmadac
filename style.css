@@ -18,8 +18,8 @@
     --radius: 16px;
     --radius-sm: 10px;
     --transition: .35s cubic-bezier(.4,0,.2,1);
-    --font-heading: 'Space Grotesk', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    --font-heading: 'Poppins', system-ui, sans-serif;
+    --font-body: 'Poppins', system-ui, sans-serif;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }

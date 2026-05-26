@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daniel Madac — Deeptech Portfolio</title>
+    <meta name="description" content="Daniel Madac — FabLab Coordinator, Maker, Developer, Photographer. Portfolio for VivaTech 2026.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="nav" id="nav">
+        <a href="#hero" class="nav-logo">DM</a>
+        <div class="nav-links" id="navLinks">
+            <a href="#about">Journey</a>
+            <a href="#skills">Skills</a>
+            <a href="#experience">Experience</a>
+            <a href="#projects">Projects</a>
+            <a href="#languages">Languages</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <button class="nav-burger" id="navBurger" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <section class="hero" id="hero">
+        <canvas id="particleCanvas"></canvas>
+        <div class="hero-content">
+            <div class="hero-badge">VivaTech 2026 &bull; Institut Optique Graduate School</div>
+            <h1 class="hero-name">
+                <span class="hero-line hero-first">Daniel</span>
+                <span class="hero-line hero-last">Madac</span>
+            </h1>
+            <p class="hero-tagline">The Human <span class="gradient-text">LLM</span> for Software &amp; Hardware</p>
+            <p class="hero-subtitle">FabLab Coordinator &bull; Maker &bull; Developer &bull; Photographer</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number" data-target="4">0</span>
+                    <span class="stat-label">Countries</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-target="6">0</span>
+                    <span class="stat-label">Languages</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-target="10">0</span>
+                    <span class="stat-label">Startups Helped</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-target="8">0</span>
+                    <span class="stat-label">Years in Tech</span>
+                </div>
+            </div>
+            <a href="#about" class="hero-cta">Explore My World</a>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"><div class="wheel"></div></div>
+        </div>
+    </section>
+
+    <section class="section journey" id="about">
+        <div class="container">
+            <h2 class="section-title reveal">My Journey</h2>
+            <p class="section-subtitle reveal">4 countries. 6 languages. One relentless drive to build.</p>
+            <div class="journey-path">
+                <div class="journey-stop reveal">
+                    <div class="journey-marker">
+                        <div class="journey-flag">&#127479;&#127476;</div>
+                        <div class="journey-pulse"></div>
+                    </div>
+                    <div class="journey-info">
+                        <h3>Romania</h3>
+                        <span class="journey-years">Birthplace</span>
+                        <p>Where the story begins. Born with curiosity and grit.</p>
+                    </div>
+                </div>
+                <div class="journey-connector reveal"></div>
+                <div class="journey-stop reveal">
+                    <div class="journey-marker">
+                        <div class="journey-flag">&#127470;&#127481;</div>
+                        <div class="journey-pulse"></div>
+                    </div>
+                    <div class="journey-info">
+                        <h3>Italy</h3>
+                        <span class="journey-years">12 years</span>
+                        <p>ITIS Lattanzio in Rome. Programming &amp; Telecom. The foundation was built here.</p>
+                    </div>
+                </div>
+                <div class="journey-connector reveal"></div>
+                <div class="journey-stop reveal">
+                    <div class="journey-marker">
+                        <div class="journey-flag">&#127462;&#127481;</div>
+                        <div class="journey-pulse"></div>
+                    </div>
+                    <div class="journey-info">
+                        <h3>Austria</h3>
+                        <span class="journey-years">10 years</span>
+                        <p>Management, freelance web &amp; IT consulting. Built resilience, business acumen, and a family.</p>
+                    </div>
+                </div>
+                <div class="journey-connector reveal"></div>
+                <div class="journey-stop reveal">
+                    <div class="journey-marker active">
+                        <div class="journey-flag">&#127467;&#127479;</div>
+                        <div class="journey-pulse"></div>
+                    </div>
+                    <div class="journey-info">
+                        <h3>France</h3>
+                        <span class="journey-years">3 years &mdash; Present</span>
+                        <p>FabLab Coordinator at Institut Optique Graduate School, Paris-Saclay. Prototyping, lasers, CNC, deeptech, and innovation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section skills" id="skills">
+        <div class="container">
+            <h2 class="section-title reveal">Skills Dashboard</h2>
+            <p class="section-subtitle reveal">A polymath toolkit &mdash; from atoms to algorithms</p>
+            <div class="skills-grid">
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#9881;&#65039;</span></div>
+                    <h3>Fabrication</h3>
+                    <div class="skill-tags">
+                        <span>3D Printing (Bambu Lab)</span>
+                        <span>Trotec Laser</span>
+                        <span>CNC Wood &amp; Alu</span>
+                        <span>PETG / PLA-CF / TPU</span>
+                        <span>PAHT-CF</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#127912;</span></div>
+                    <h3>Design &amp; CAD</h3>
+                    <div class="skill-tags">
+                        <span>Fusion 360 (CAD/CAM)</span>
+                        <span>Figma</span>
+                        <span>Notion</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#128187;</span></div>
+                    <h3>Code</h3>
+                    <div class="skill-tags">
+                        <span>Python</span>
+                        <span>C / C++</span>
+                        <span>JavaScript</span>
+                        <span>HTML / CSS</span>
+                        <span>Swift</span>
+                        <span>API Integration</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#127760;</span></div>
+                    <h3>Web &amp; Apps</h3>
+                    <div class="skill-tags">
+                        <span>React</span>
+                        <span>Tailwind CSS</span>
+                        <span>Android SDK</span>
+                        <span>Xcode / Swift</span>
+                        <span>Lovable</span>
+                        <span>Vibe Coding</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="78"></div></div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#128268;</span></div>
+                    <h3>Electronics &amp; Hardware</h3>
+                    <div class="skill-tags">
+                        <span>Raspberry Pi</span>
+                        <span>Arduino</span>
+                        <span>Firmware CNC</span>
+                        <span>PC Building</span>
+                        <span>Overclocking</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="86"></div></div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#128247;</span></div>
+                    <h3>Photography &amp; Media</h3>
+                    <div class="skill-tags">
+                        <span>Sony FX2 Studio</span>
+                        <span>Human Photography</span>
+                        <span>Video Production</span>
+                        <span>Photo Editing</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="82"></div></div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#129302;</span></div>
+                    <h3>AI &amp; Automation</h3>
+                    <div class="skill-tags">
+                        <span>LLM Workflows</span>
+                        <span>Prompt Engineering</span>
+                        <span>AI-Assisted Dev</span>
+                        <span>Open Source Tools</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+                </div>
+                <div class="skill-card reveal">
+                    <div class="skill-icon-wrap"><span class="skill-icon">&#128421;&#65039;</span></div>
+                    <h3>Cross-Platform</h3>
+                    <div class="skill-tags">
+                        <span>macOS</span>
+                        <span>iOS</span>
+                        <span>Android</span>
+                        <span>Windows</span>
+                        <span>Linux</span>
+                    </div>
+                    <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section experience" id="experience">
+        <div class="container">
+            <h2 class="section-title reveal">Experience</h2>
+            <p class="section-subtitle reveal">From artisan hospitality to deeptech prototyping</p>
+            <div class="timeline">
+                <div class="timeline-line"></div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2024 &mdash; Present</span>
+                        <h3>FabLab Coordinator</h3>
+                        <h4>Institut Optique Graduate School &mdash; Paris-Saclay</h4>
+                        <ul>
+                            <li>Operational management of FabLab: Bambu Lab 3D printers (PLA/PLA-CF), Trotec laser, CNC wood &amp; aluminium</li>
+                            <li>3D modelling, prototyping, machine programming &amp; parameterization</li>
+                            <li>Mentoring 2 FIE cohorts and 10 startups</li>
+                            <li>Open-source maintenance, security protocols, Notion-based asset management</li>
+                            <li>Prix de l'Innovation Paris-Saclay 2025</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2018 &mdash; Jan 2025</span>
+                        <h3>Freelance Web Designer &amp; IT Consultant</h3>
+                        <h4>Wix &middot; Recycledwelt &mdash; Remote, Europe</h4>
+                        <ul>
+                            <li>Website creation for SMEs and artisans (forms, workflows, payments)</li>
+                            <li>Network security systems installation and consulting</li>
+                            <li>Recycledwelt: upcycled furniture e-commerce with colorimetric photo printing</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2015 &mdash; 2023</span>
+                        <h3>Manager</h3>
+                        <h4>La Dolce Vita &mdash; Knittelfeld, Austria</h4>
+                        <ul>
+                            <li>Co-managed artisan caf&eacute; &amp; glacier: operations, inventory, production, communication</li>
+                            <li>Led a multicultural team of 10 people</li>
+                            <li>Digitized scheduling, introduced process automation and collaborative IT tools</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2011 &mdash; 2013</span>
+                        <h3>Programming &amp; Telecom</h3>
+                        <h4>ITIS Lattanzio &mdash; Rome, Italy</h4>
+                        <ul>
+                            <li>Professional baccalaureate equivalent in Programming &amp; Telecommunications</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section projects" id="projects">
+        <div class="container">
+            <h2 class="section-title reveal">Projects</h2>
+            <p class="section-subtitle reveal">Building at the intersection of atoms and bits</p>
+            <div class="projects-grid">
+                <div class="project-card reveal">
+                    <div class="project-image"><div class="project-placeholder">&#9889;</div></div>
+                    <div class="project-info">
+                        <span class="project-tag">FabLab &middot; Innovation</span>
+                        <h3>FabLab Innovation Hub</h3>
+                        <p>Open-source prototyping environment serving 10+ startups and 2 student cohorts. 3D printing, laser cutting, CNC machining. Prix de l'Innovation Paris-Saclay 2025.</p>
+                    </div>
+                </div>
+                <div class="project-card reveal">
+                    <div class="project-image"><div class="project-placeholder">&#127760;</div></div>
+                    <div class="project-info">
+                        <span class="project-tag">Web &middot; Creative</span>
+                        <h3>danielscreatesparis.com</h3>
+                        <p>Personal creative portfolio showcasing photography, web design, and digital projects across Europe.</p>
+                    </div>
+                </div>
+                <div class="project-card reveal">
+                    <div class="project-image"><div class="project-placeholder">&#128241;</div></div>
+                    <div class="project-info">
+                        <span class="project-tag">Apps &middot; Vibe Coding</span>
+                        <h3>Mobile App Prototypes</h3>
+                        <p>iOS and Android experiments built with Swift/Xcode, Android SDK, Lovable, and AI-assisted vibe coding workflows.</p>
+                    </div>
+                </div>
+                <div class="project-card reveal">
+                    <div class="project-image"><div class="project-placeholder">&#9851;&#65039;</div></div>
+                    <div class="project-info">
+                        <span class="project-tag">Sustainability &middot; E-Commerce</span>
+                        <h3>Recycledwelt</h3>
+                        <p>Upcycled furniture e-commerce. Sourcing, restoration, colorimetric photo production, and digital sales integration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section languages" id="languages">
+        <div class="container">
+            <h2 class="section-title reveal">Languages</h2>
+            <p class="section-subtitle reveal">A polyglot bridge between cultures and markets</p>
+            <div class="languages-grid">
+                <div class="lang-card reveal">
+                    <div class="lang-flag">&#127479;&#127476;</div>
+                    <h3>Romanian</h3>
+                    <span class="lang-level">Native</span>
+                    <div class="lang-bar"><div class="lang-fill" data-width="100"></div></div>
+                </div>
+                <div class="lang-card reveal">
+                    <div class="lang-flag">&#127470;&#127481;</div>
+                    <h3>Italian</h3>
+                    <span class="lang-level">Native</span>
+                    <div class="lang-bar"><div class="lang-fill" data-width="100"></div></div>
+                </div>
+                <div class="lang-card reveal">
+                    <div class="lang-flag">&#127468;&#127463;</div>
+                    <h3>English</h3>
+                    <span class="lang-level">C1</span>
+                    <div class="lang-bar"><div class="lang-fill" data-width="85"></div></div>
+                </div>
+                <div class="lang-card reveal">
+                    <div class="lang-flag">&#127465;&#127466;</div>
+                    <h3>German</h3>
+                    <span class="lang-level">B2</span>
+                    <div class="lang-bar"><div class="lang-fill" data-width="72"></div></div>
+                </div>
+                <div class="lang-card reveal">
+                    <div class="lang-flag">&#127467;&#127479;</div>
+                    <h3>French</h3>
+                    <span class="lang-level">B1</span>
+                    <div class="lang-bar"><div class="lang-fill" data-width="60"></div></div>
+                </div>
+                <div class="lang-card reveal">
+                    <div class="lang-flag">&#127466;&#127480;</div>
+                    <h3>Spanish</h3>
+                    <span class="lang-level">A2</span>
+                    <div class="lang-bar"><div class="lang-fill" data-width="35"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section vivatech" id="vivatech">
+        <div class="container">
+            <div class="vivatech-wrapper reveal">
+                <div class="vivatech-header">
+                    <h2 class="section-title">VivaTech 2026</h2>
+                    <p class="section-subtitle">10th Anniversary &mdash; Find me at Europe's biggest tech event</p>
+                </div>
+                <div class="vivatech-card">
+                    <div class="badge-glow"></div>
+                    <div class="badge-content">
+                        <div class="badge-top">
+                            <span class="badge-event">VIVATECH</span>
+                            <span class="badge-edition">10<sup>th</sup></span>
+                        </div>
+                        <div class="badge-name">Daniel Madac</div>
+                        <div class="badge-school">Institut Optique Graduate School</div>
+                        <div class="badge-type">STUDENT DELEGATE</div>
+                        <div class="badge-grid">
+                            <div class="badge-cell">
+                                <span class="badge-label">Dates</span>
+                                <span class="badge-value">June 17&ndash;20</span>
+                            </div>
+                            <div class="badge-cell">
+                                <span class="badge-label">Entrance</span>
+                                <span class="badge-value">Gate A2</span>
+                            </div>
+                            <div class="badge-cell">
+                                <span class="badge-label">Hall</span>
+                                <span class="badge-value">4.3</span>
+                            </div>
+                            <div class="badge-cell">
+                                <span class="badge-label">Hours</span>
+                                <span class="badge-value">9AM&ndash;6PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section contact" id="contact">
+        <div class="container">
+            <h2 class="section-title reveal">Let's Connect</h2>
+            <p class="section-subtitle reveal">Looking for the hard challenge. Ready to build the future.</p>
+            <div class="contact-grid">
+                <a href="mailto:danielgheorghemadac@icloud.com" class="contact-card reveal">
+                    <span class="contact-icon">&#9993;&#65039;</span>
+                    <span class="contact-label">Email</span>
+                </a>
+                <a href="https://linkedin.com/in/daniel-madac-3694091bb" target="_blank" rel="noopener" class="contact-card reveal">
+                    <span class="contact-icon">&#128188;</span>
+                    <span class="contact-label">LinkedIn</span>
+                </a>
+                <a href="https://www.danielscreatesparis.com" target="_blank" rel="noopener" class="contact-card reveal">
+                    <span class="contact-icon">&#127757;</span>
+                    <span class="contact-label">Portfolio</span>
+                </a>
+                <a href="tel:+33652146317" class="contact-card reveal">
+                    <span class="contact-icon">&#128222;</span>
+                    <span class="contact-label">Call Me</span>
+                </a>
+            </div>
+            <div class="contact-quote reveal">
+                <blockquote>&ldquo;I'm a human LLM for languages of software and hardware &mdash; give me the hard challenge.&rdquo;</blockquote>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 Daniel Madac &mdash; Built for VivaTech</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

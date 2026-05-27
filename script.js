@@ -207,11 +207,57 @@
         barObserver.observe(el);
     });
 
-    // ============ SMOOTH SCROLL FOR NAV LOGO ============
-    document.querySelector('.nav-logo').addEventListener('click', e => {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    // ============ SECRET FACTS ON DM LOGO ============
+    (function initSecretFacts() {
+        var facts = [
+            { q: 'Biggest Dream', a: 'Build something that changes millions of lives' },
+            { q: 'Biggest Fear', a: 'Standing still — not growing, not building' },
+            { q: 'Favorite Country', a: "All 4 shaped me. But Italy is where my soul lives" },
+            { q: 'Dream Location', a: 'Wherever the next big challenge takes me' },
+            { q: 'Hidden Talent', a: 'I learn any language — human or machine — fast' },
+            { q: 'Life Motto', a: 'Give me the hard challenge' },
+            { q: 'Best Time to Code', a: 'After midnight. The world is quiet, the ideas are loud' },
+            { q: 'Superpower', a: 'Adapting to any environment — 4 countries proved it' },
+            { q: 'Favorite Tool', a: 'My hands. Everything starts with building' },
+            { q: 'What Drives Me', a: 'My 2 kids. Every project is for their future' },
+            { q: 'Comfort Food', a: 'Romanian mămăligă & Italian carbonara' },
+            { q: 'First Code', a: 'HTML on a school PC in Rome, age 16' },
+            { q: 'Dream Team', a: "Small, fast, multicultural — like every team I've led" },
+            { q: 'Music While Working', a: 'Lo-fi beats or total silence. No in-between' },
+            { q: 'If Not Tech', a: 'A photographer documenting human stories worldwide' }
+        ];
+        var factIndex = 0;
+        var tapCount = 0;
+        var tapTimer = null;
+
+        var logo = document.querySelector('.nav-logo');
+        if (!logo) return;
+
+        logo.addEventListener('click', function(e) {
+            e.preventDefault();
+            tapCount++;
+
+            if (tapTimer) clearTimeout(tapTimer);
+            tapTimer = setTimeout(function() { tapCount = 0; }, 800);
+
+            if (tapCount >= 3) {
+                tapCount = 0;
+                var fact = facts[factIndex % facts.length];
+                factIndex++;
+
+                var popup = document.createElement('div');
+                popup.className = 'secret-fact';
+                popup.innerHTML = '<div class="secret-fact-q">' + fact.q + '</div><div class="secret-fact-a">' + fact.a + '</div>';
+                document.body.appendChild(popup);
+
+                setTimeout(function() { popup.classList.add('visible'); }, 50);
+                setTimeout(function() {
+                    popup.classList.remove('visible');
+                    setTimeout(function() { popup.remove(); }, 500);
+                }, 3500);
+            }
+        });
+    })();
 
     // ============ HARD REFRESH BUTTON ============
     var refreshBtn = document.getElementById('hardRefresh');
@@ -297,7 +343,7 @@
 
     // ============ 3D TILT EFFECT ON CARDS (MOUSE + TOUCH) ============
     (function initTiltCards() {
-        var selectors = '.skill-card, .project-card, .lang-card, .contact-card, .timeline-content';
+        var selectors = '.lang-card, .contact-card, .timeline-content';
         var cards = document.querySelectorAll(selectors);
         var MAX_TILT = 15;
 
@@ -675,6 +721,39 @@
             if (!wasExpanded) stop.classList.add('expanded');
         });
     });
+
+    // ============ FLIP CARDS ============
+    (function initFlipCards() {
+        document.querySelectorAll('.skill-card, .project-card').forEach(function(card) {
+            // Create structure
+            var inner = document.createElement('div');
+            inner.className = 'flip-card-inner';
+
+            var front = document.createElement('div');
+            front.className = 'flip-card-front';
+
+            // Move all existing children to front
+            while (card.firstChild) {
+                front.appendChild(card.firstChild);
+            }
+
+            var back = document.createElement('div');
+            back.className = 'flip-card-back';
+            // Add a subtle hint on the back
+            back.innerHTML = '<div class="flip-back-content"><span class="flip-back-hint">Coming soon</span></div>';
+
+            inner.appendChild(front);
+            inner.appendChild(back);
+            card.appendChild(inner);
+
+            // Toggle flip on click/tap
+            card.addEventListener('click', function(e) {
+                // Don't flip if clicking a link
+                if (e.target.tagName === 'A') return;
+                card.classList.toggle('flipped');
+            });
+        });
+    })();
 
     // ============ SKILL ICON GLOW ON FIRST APPEARANCE ============
     var glowObserver = new IntersectionObserver(function (entries) {

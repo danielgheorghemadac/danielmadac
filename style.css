@@ -762,11 +762,45 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition);
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.05);
 }
 
 .project-placeholder {
     font-size: 3.5rem;
     opacity: .6;
+}
+
+.project-add-icon {
+    font-family: var(--font-heading);
+    font-size: 4rem;
+    font-weight: 300;
+    opacity: .3;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: opacity var(--transition);
+}
+
+.project-card-add {
+    border-style: dashed;
+    border-color: rgba(68,138,255,.15);
+}
+
+.project-card-add:hover .project-add-icon {
+    opacity: .7;
 }
 
 .project-info { padding: 24px; }

@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="cursor-glow" id="cursorGlow"></div>
     <nav class="nav" id="nav">
         <a href="#hero" class="nav-logo">DM</a>
         <div class="nav-links" id="navLinks">
@@ -62,12 +63,22 @@
                     <span class="stat-label">Years in Tech</span>
                 </div>
             </div>
-            <a href="#about" class="hero-cta">Explore My World</a>
+            <a href="#about" class="hero-cta">Let's Go</a>
         </div>
         <div class="scroll-indicator">
             <div class="mouse"><div class="wheel"></div></div>
         </div>
     </section>
+
+    <div class="countdown-banner" id="countdown">
+        <span class="countdown-label">VivaTech 2026 starts in</span>
+        <div class="countdown-timer">
+            <div class="countdown-unit"><span class="countdown-num" id="cd-days">00</span><span class="countdown-tag">days</span></div>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-hours">00</span><span class="countdown-tag">hrs</span></div>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-mins">00</span><span class="countdown-tag">min</span></div>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-secs">00</span><span class="countdown-tag">sec</span></div>
+        </div>
+    </div>
 
     <section class="section journey" id="about">
         <div class="container">
@@ -129,6 +140,10 @@
         <div class="container">
             <h2 class="section-title reveal">Skills Dashboard</h2>
             <p class="section-subtitle reveal">A polymath toolkit &mdash; from atoms to algorithms</p>
+            <div class="radar-wrapper reveal">
+                <canvas id="radarChart" width="500" height="500"></canvas>
+                <div class="radar-legend" id="radarLegend"></div>
+            </div>
             <div class="skills-grid">
                 <div class="skill-card reveal">
                     <div class="skill-icon-wrap"><span class="skill-icon">&#9881;&#65039;</span></div>
@@ -450,5 +465,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="i18n.js"></script>
 </body>
 </html>

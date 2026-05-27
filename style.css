@@ -904,6 +904,173 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     100% { opacity: .25; }
 }
 
+/* ============ COUNTDOWN BANNER ============ */
+.countdown-banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, rgba(0,212,255,.08), rgba(123,47,247,.08));
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+    flex-wrap: wrap;
+}
+
+.countdown-label {
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.countdown-timer {
+    display: flex;
+    gap: 12px;
+}
+
+.countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.countdown-num {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    min-width: 2.2ch;
+    text-align: center;
+    transition: transform .15s;
+}
+
+.countdown-num.tick {
+    transform: scale(1.15);
+}
+
+.countdown-tag {
+    font-size: .6rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+/* ============ RADAR CHART ============ */
+.radar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 64px;
+    flex-wrap: wrap;
+}
+
+#radarChart {
+    flex-shrink: 0;
+    cursor: crosshair;
+}
+
+.radar-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+}
+
+.radar-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.radar-legend-item:hover,
+.radar-legend-item.active {
+    background: rgba(0,212,255,.08);
+}
+
+.radar-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.radar-legend-name {
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.radar-legend-item.active .radar-legend-name {
+    color: var(--text-primary);
+}
+
+.radar-legend-val {
+    font-family: var(--font-heading);
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.radar-legend-item.active .radar-legend-val {
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ============ LANGUAGE SWITCHER ============ */
+.lang-switcher {
+    display: flex;
+    gap: 4px;
+    margin-left: 16px;
+}
+
+.lang-switcher-btn {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.lang-switcher-btn:hover {
+    color: var(--accent-cyan);
+    border-color: rgba(0,212,255,.2);
+}
+
+.lang-switcher-btn.active {
+    color: var(--accent-cyan);
+    background: rgba(0,212,255,.1);
+    border-color: rgba(0,212,255,.3);
+}
+
+/* ============ 3D TILT TRANSFORM ORIGIN ============ */
+.skill-card,
+.project-card,
+.lang-card,
+.contact-card {
+    transform-style: preserve-3d;
+}
+
 /* ============ MOBILE NAV OVERLAY ============ */
 .nav-links.open {
     display: flex;
@@ -934,6 +1101,20 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
         font-size: 1.3rem;
     }
 
+    .lang-switcher {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1001;
+        background: rgba(7,7,13,.95);
+        backdrop-filter: blur(10px);
+        padding: 6px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-left: 0;
+    }
+
     .hero-stats { gap: 20px; }
     .stat-number { font-size: 2rem; }
 
@@ -954,6 +1135,15 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     .contact-card { min-width: 120px; padding: 20px 24px; }
 
     .badge-content { padding: 28px 20px; }
+
+    .countdown-banner { gap: 12px; padding: 14px 16px; }
+    .countdown-num { font-size: 1.3rem; }
+    .countdown-label { font-size: .75rem; }
+
+    .radar-wrapper { flex-direction: column; gap: 24px; }
+    #radarChart { max-width: 100%; }
+    .radar-legend { flex-direction: row; flex-wrap: wrap; justify-content: center; min-width: auto; }
+    .radar-legend-item { padding: 6px 10px; }
 }
 
 @media (max-width: 480px) {

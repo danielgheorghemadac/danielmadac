@@ -238,10 +238,25 @@
             tapCount++;
 
             if (tapTimer) clearTimeout(tapTimer);
-            tapTimer = setTimeout(function() { tapCount = 0; }, 800);
+            tapTimer = setTimeout(function() {
+                if (tapCount < 3) {
+                    // Single/double tap: flash and scroll to top
+                    var flash = document.createElement('div');
+                    flash.className = 'screen-flash';
+                    document.body.appendChild(flash);
+                    requestAnimationFrame(function() { flash.classList.add('active'); });
+                    setTimeout(function() {
+                        window.scrollTo({ top: 0, behavior: 'instant' });
+                        flash.classList.remove('active');
+                        setTimeout(function() { flash.remove(); }, 400);
+                    }, 250);
+                }
+                tapCount = 0;
+            }, 500);
 
             if (tapCount >= 3) {
                 tapCount = 0;
+                if (tapTimer) clearTimeout(tapTimer);
                 var fact = facts[factIndex % facts.length];
                 factIndex++;
 

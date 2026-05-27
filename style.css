@@ -1086,6 +1086,21 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     font-style: italic;
 }
 
+/* ============ SCREEN FLASH ============ */
+.screen-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease-in;
+}
+
+.screen-flash.active {
+    opacity: 0.9;
+}
+
 /* ============ SECRET FACTS ============ */
 .secret-fact {
     position: fixed;

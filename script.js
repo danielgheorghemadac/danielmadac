@@ -391,7 +391,7 @@
 
         function getCenterAndRadius() {
             var cSize = parseFloat(radarCanvas.style.width);
-            return { cx: cSize / 2, cy: cSize / 2, maxR: cSize * 0.34 };
+            return { cx: cSize / 2, cy: cSize / 2, maxR: cSize * 0.28 };
         }
 
         function drawRadar(progress) {

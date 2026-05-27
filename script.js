@@ -213,6 +213,22 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    // ============ HARD REFRESH BUTTON ============
+    var refreshBtn = document.getElementById('hardRefresh');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function () {
+            if ('caches' in window) {
+                caches.keys().then(function (names) {
+                    names.forEach(function (name) { caches.delete(name); });
+                }).then(function () {
+                    window.location.reload(true);
+                });
+            } else {
+                window.location.href = window.location.pathname + '?t=' + Date.now();
+            }
+        });
+    }
+
     // ============ PARALLAX SUBTLE EFFECT ON HERO ============
     const heroContent = document.querySelector('.hero-content');
     window.addEventListener('scroll', () => {

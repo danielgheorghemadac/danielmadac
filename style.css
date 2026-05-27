@@ -456,7 +456,50 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 28px 24px;
-    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    transition: transform var(--transition), box-shadow var(--transition);
+    position: relative;
+    z-index: 1;
+}
+
+.skill-card::before,
+.skill-card::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: calc(var(--radius) + 2px);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.skill-card::before {
+    background: conic-gradient(from var(--border-angle, 0deg), transparent 30%, #448aff 50%, #00e676 60%, transparent 70%);
+}
+
+.skill-card::after {
+    inset: 0;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+}
+
+.skill-card:hover::before,
+.skill-card:hover::after {
+    opacity: 1;
+}
+
+.skill-card:hover {
+    border-color: transparent;
+    animation: rotateBorder 2s linear infinite;
+}
+
+@keyframes rotateBorder {
+    to { --border-angle: 360deg; }
+}
+
+@property --border-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
 }
 
 .skill-card:hover {
@@ -582,8 +625,35 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 24px 28px;
-    transition: border-color var(--transition), box-shadow var(--transition);
+    transition: box-shadow var(--transition);
+    position: relative;
+    z-index: 1;
 }
+
+.timeline-content::before,
+.timeline-content::after {
+    content: '';
+    position: absolute;
+    border-radius: calc(var(--radius) + 2px);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.timeline-content::before {
+    inset: -2px;
+    background: conic-gradient(from var(--border-angle, 0deg), transparent 30%, #448aff 50%, #00e676 60%, transparent 70%);
+}
+
+.timeline-content::after {
+    inset: 0;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+}
+
+.timeline-content:hover::before,
+.timeline-content:hover::after { opacity: 1; }
+.timeline-content:hover { border-color: transparent; animation: rotateBorder 2s linear infinite; }
 
 .timeline-content:hover {
     border-color: rgba(68,138,255,.15);
@@ -649,9 +719,36 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
-    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    overflow: visible;
+    transition: transform var(--transition), box-shadow var(--transition);
+    position: relative;
+    z-index: 1;
 }
+
+.project-card::before,
+.project-card::after {
+    content: '';
+    position: absolute;
+    border-radius: calc(var(--radius) + 2px);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.project-card::before {
+    inset: -2px;
+    background: conic-gradient(from var(--border-angle, 0deg), transparent 30%, #448aff 50%, #00e676 60%, transparent 70%);
+}
+
+.project-card::after {
+    inset: 0;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+}
+
+.project-card:hover::before,
+.project-card:hover::after { opacity: 1; }
+.project-card:hover { border-color: transparent; animation: rotateBorder 2s linear infinite; }
 
 .project-card:hover {
     transform: translateY(-6px);

@@ -461,7 +461,6 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 }
 
 .skill-card:hover {
-    transform: translateY(-6px);
     box-shadow: 0 0 30px rgba(68,138,255,.3);
 }
 
@@ -655,7 +654,6 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 }
 
 .project-card:hover {
-    transform: translateY(-6px);
     box-shadow: 0 0 30px rgba(0,230,118,.25);
 }
 
@@ -666,6 +664,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    border-radius: var(--radius) var(--radius) 0 0;
     position: relative;
 }
 

@@ -29,13 +29,13 @@
             contactTitle: "Let’s Connect",
             contactSub: 'Looking for the hard challenge. Ready to build the future.',
             contactQuote: '“I’m a human LLM for languages of software and hardware — give me the hard challenge.”',
-            statCountries: 'Countries', statLanguages: 'Languages', statStartups: 'Startups Helped', statYears: 'Years in Tech',
+            statCountries: 'Countries', statLanguages: 'Languages', statStartups: 'Startups & Students', statYears: 'Years in Tech',
             footerText: '© 2026 Daniel Madac — Built for VivaTech'
         },
         fr: {
             heroTagline: 'Le <span class="gradient-text">LLM</span> Humain pour le Software &amp; Hardware',
             heroSubtitle: 'Coordinateur FabLab • Maker • Développeur • Photographe',
-            heroCta: 'Découvrir mon monde',
+            heroCta: "C'est parti",
             countdownLabel: 'VivaTech 2026 commence dans',
             countdownLive: 'VivaTech 2026 est EN DIRECT !',
             navJourney: 'Parcours', navSkills: 'Compétences', navExperience: 'Expérience',
@@ -59,13 +59,13 @@
             contactTitle: 'Connectons-nous',
             contactSub: 'À la recherche du défi. Prêt à construire l’avenir.',
             contactQuote: '«Je suis un LLM humain pour les langages du software et du hardware — donnez-moi le défi.»',
-            statCountries: 'Pays', statLanguages: 'Langues', statStartups: 'Startups Aidées', statYears: 'Ans en Tech',
+            statCountries: 'Pays', statLanguages: 'Langues', statStartups: 'Startups & Étudiants', statYears: 'Ans en Tech',
             footerText: '© 2026 Daniel Madac — Conçu pour VivaTech'
         },
         it: {
             heroTagline: 'L’<span class="gradient-text">LLM</span> Umano per Software &amp; Hardware',
             heroSubtitle: 'Coordinatore FabLab • Maker • Sviluppatore • Fotografo',
-            heroCta: 'Esplora il mio mondo',
+            heroCta: 'Andiamo',
             countdownLabel: 'VivaTech 2026 inizia tra',
             countdownLive: 'VivaTech 2026 è LIVE!',
             navJourney: 'Percorso', navSkills: 'Competenze', navExperience: 'Esperienza',
@@ -89,13 +89,13 @@
             contactTitle: 'Connettiamoci',
             contactSub: 'In cerca della sfida difficile. Pronto a costruire il futuro.',
             contactQuote: '«Sono un LLM umano per i linguaggi del software e dell’hardware — datemi la sfida.»',
-            statCountries: 'Paesi', statLanguages: 'Lingue', statStartups: 'Startup Aiutate', statYears: 'Anni nel Tech',
+            statCountries: 'Paesi', statLanguages: 'Lingue', statStartups: 'Startup & Studenti', statYears: 'Anni nel Tech',
             footerText: '© 2026 Daniel Madac — Creato per VivaTech'
         },
         ro: {
             heroTagline: '<span class="gradient-text">LLM</span>-ul Uman pentru Software &amp; Hardware',
             heroSubtitle: 'Coordonator FabLab • Maker • Dezvoltator • Fotograf',
-            heroCta: 'Descoperă lumea mea',
+            heroCta: 'Hai să mergem',
             countdownLabel: 'VivaTech 2026 începe în',
             countdownLive: 'VivaTech 2026 este LIVE!',
             navJourney: 'Parcurs', navSkills: 'Competențe', navExperience: 'Experiență',
@@ -119,13 +119,13 @@
             contactTitle: 'Să ne conectăm',
             contactSub: 'Caut provocarea grea. Gata să construiesc viitorul.',
             contactQuote: '„Sunt un LLM uman pentru limbajele software-ului și hardware-ului — dați-mi provocarea.”',
-            statCountries: 'Țări', statLanguages: 'Limbi', statStartups: 'Startup-uri Ajutate', statYears: 'Ani în Tech',
+            statCountries: 'Țări', statLanguages: 'Limbi', statStartups: 'Startup-uri & Studenți', statYears: 'Ani în Tech',
             footerText: '© 2026 Daniel Madac — Creat pentru VivaTech'
         },
         de: {
             heroTagline: 'Das menschliche <span class="gradient-text">LLM</span> für Software &amp; Hardware',
             heroSubtitle: 'FabLab-Koordinator • Maker • Entwickler • Fotograf',
-            heroCta: 'Meine Welt entdecken',
+            heroCta: "Los geht's",
             countdownLabel: 'VivaTech 2026 beginnt in',
             countdownLive: 'VivaTech 2026 ist LIVE!',
             navJourney: 'Reise', navSkills: 'Fähigkeiten', navExperience: 'Erfahrung',
@@ -149,13 +149,13 @@
             contactTitle: 'Lass uns vernetzen',
             contactSub: 'Auf der Suche nach der harten Herausforderung. Bereit die Zukunft zu bauen.',
             contactQuote: '„Ich bin ein menschliches LLM für die Sprachen von Software und Hardware — gebt mir die Herausforderung.“',
-            statCountries: 'Länder', statLanguages: 'Sprachen', statStartups: 'Startups Unterstützt', statYears: 'Jahre in Tech',
+            statCountries: 'Länder', statLanguages: 'Sprachen', statStartups: 'Startups & Studenten', statYears: 'Jahre in Tech',
             footerText: '© 2026 Daniel Madac — Gebaut für VivaTech'
         },
         es: {
             heroTagline: 'El <span class="gradient-text">LLM</span> Humano para Software &amp; Hardware',
             heroSubtitle: 'Coordinador FabLab • Maker • Desarrollador • Fotógrafo',
-            heroCta: 'Explorar mi mundo',
+            heroCta: 'Vamos',
             countdownLabel: 'VivaTech 2026 comienza en',
             countdownLive: '¡VivaTech 2026 está EN VIVO!',
             navJourney: 'Trayectoria', navSkills: 'Habilidades', navExperience: 'Experiencia',
@@ -179,7 +179,7 @@
             contactTitle: 'Conectémonos',
             contactSub: 'Buscando el desafío duro. Listo para construir el futuro.',
             contactQuote: '«Soy un LLM humano para los lenguajes del software y el hardware — dame el desafío.»',
-            statCountries: 'Países', statLanguages: 'Idiomas', statStartups: 'Startups Ayudadas', statYears: 'Años en Tech',
+            statCountries: 'Países', statLanguages: 'Idiomas', statStartups: 'Startups & Estudiantes', statYears: 'Años en Tech',
             footerText: '© 2026 Daniel Madac — Construido para VivaTech'
         }
     };

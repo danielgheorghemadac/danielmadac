@@ -267,45 +267,54 @@
         tick();
     })();
 
-    // ============ 3D TILT EFFECT ON CARDS ============
+    // ============ 3D TILT EFFECT ON CARDS (MOUSE + TOUCH) ============
     (function initTiltCards() {
-        const selectors = '.skill-card, .project-card, .lang-card, .contact-card';
-        const cards = document.querySelectorAll(selectors);
-        const MAX_TILT = 12;
+        var selectors = '.skill-card, .project-card, .lang-card, .contact-card, .timeline-content';
+        var cards = document.querySelectorAll(selectors);
+        var MAX_TILT = 15;
+
+        function applyTilt(card, clientX, clientY) {
+            var rect = card.getBoundingClientRect();
+            var centerX = rect.left + rect.width / 2;
+            var centerY = rect.top + rect.height / 2;
+            var rotateY = ((clientX - centerX) / (rect.width / 2)) * MAX_TILT;
+            var rotateX = -((clientY - centerY) / (rect.height / 2)) * MAX_TILT;
+            card.style.transition = 'none';
+            card.style.transform = 'perspective(600px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) scale3d(1.03, 1.03, 1.03)';
+        }
+
+        function resetTilt(card) {
+            card.style.transition = 'transform 0.45s cubic-bezier(0.23, 1, 0.32, 1)';
+            card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        }
 
         cards.forEach(function (card) {
-            let rafId = null;
-            let currentX = 0;
-            let currentY = 0;
-
             card.style.willChange = 'transform';
             card.style.transition = 'transform 0.45s cubic-bezier(0.23, 1, 0.32, 1)';
+            var isTilting = false;
 
             card.addEventListener('mousemove', function (e) {
-                if (rafId) cancelAnimationFrame(rafId);
-
-                rafId = requestAnimationFrame(function () {
-                    const rect = card.getBoundingClientRect();
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    const mouseX = e.clientX - centerX;
-                    const mouseY = e.clientY - centerY;
-                    const rotateY = (mouseX / (rect.width / 2)) * MAX_TILT;
-                    const rotateX = -(mouseY / (rect.height / 2)) * MAX_TILT;
-
-                    currentX = rotateX;
-                    currentY = rotateY;
-
-                    card.style.transition = 'none';
-                    card.style.transform = 'perspective(600px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) scale3d(1.03, 1.03, 1.03)';
-                    rafId = null;
-                });
+                applyTilt(card, e.clientX, e.clientY);
+            });
+            card.addEventListener('mouseleave', function () {
+                resetTilt(card);
             });
 
-            card.addEventListener('mouseleave', function () {
-                if (rafId) cancelAnimationFrame(rafId);
-                card.style.transition = 'transform 0.45s cubic-bezier(0.23, 1, 0.32, 1)';
-                card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            card.addEventListener('touchstart', function (e) {
+                isTilting = true;
+                var t = e.touches[0];
+                applyTilt(card, t.clientX, t.clientY);
+            }, { passive: true });
+
+            card.addEventListener('touchmove', function (e) {
+                if (!isTilting) return;
+                var t = e.touches[0];
+                applyTilt(card, t.clientX, t.clientY);
+            }, { passive: true });
+
+            card.addEventListener('touchend', function () {
+                isTilting = false;
+                resetTilt(card);
             });
         });
     })();
@@ -357,14 +366,14 @@
         var rCtx = radarCanvas.getContext('2d');
 
         var skills = [
-            { label: 'Fabrication', value: 92, color: '#448aff' },
-            { label: 'Design & CAD', value: 85, color: '#00e676' },
-            { label: 'Code', value: 80, color: '#66aaff' },
-            { label: 'Web & Apps', value: 78, color: '#33f296' },
-            { label: 'Electronics', value: 86, color: '#5599ff' },
-            { label: 'Photography', value: 82, color: '#00cc66' },
-            { label: 'AI & Automation', value: 75, color: '#7bbaff' },
-            { label: 'Cross-Platform', value: 90, color: '#66ffaa' }
+            { label: 'Fabrication', shortLabel: 'Fab', value: 92, color: '#448aff' },
+            { label: 'Design & CAD', shortLabel: 'Design', value: 85, color: '#00e676' },
+            { label: 'Code', shortLabel: 'Code', value: 80, color: '#66aaff' },
+            { label: 'Web & Apps', shortLabel: 'Web', value: 78, color: '#33f296' },
+            { label: 'Electronics', shortLabel: 'Electro', value: 86, color: '#5599ff' },
+            { label: 'Photography', shortLabel: 'Photo', value: 82, color: '#00cc66' },
+            { label: 'AI & Automation', shortLabel: 'AI', value: 75, color: '#7bbaff' },
+            { label: 'Cross-Platform', shortLabel: 'Platform', value: 90, color: '#66ffaa' }
         ];
 
         var numSkills = skills.length;
@@ -377,7 +386,8 @@
         // Handle high-DPI displays
         function setupCanvas() {
             var wrapper = radarCanvas.parentElement;
-            var displaySize = Math.min(wrapper.offsetWidth * 0.55, 500);
+            var isMobile = window.innerWidth < 768;
+            var displaySize = isMobile ? Math.min(wrapper.offsetWidth * 0.85, 350) : Math.min(wrapper.offsetWidth * 0.55, 500);
             var dpr = window.devicePixelRatio || 1;
             radarCanvas.style.width = displaySize + 'px';
             radarCanvas.style.height = displaySize + 'px';
@@ -391,7 +401,8 @@
 
         function getCenterAndRadius() {
             var cSize = parseFloat(radarCanvas.style.width);
-            return { cx: cSize / 2, cy: cSize / 2, maxR: cSize * 0.28 };
+            var isMobile = window.innerWidth < 768;
+            return { cx: cSize / 2, cy: cSize / 2, maxR: cSize * (isMobile ? 0.24 : 0.28) };
         }
 
         function drawRadar(progress) {
@@ -500,7 +511,8 @@
                 if (Math.cos(angle) > 0.3) rCtx.textAlign = 'left';
                 else if (Math.cos(angle) < -0.3) rCtx.textAlign = 'right';
 
-                rCtx.fillText(skills[i].label, lx, ly);
+                var displayLabel = (window.innerWidth < 768) ? skills[i].shortLabel : skills[i].label;
+                rCtx.fillText(displayLabel, lx, ly);
 
                 // Show value on hover
                 if (hoveredIndex === i) {

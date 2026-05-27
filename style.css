@@ -391,6 +391,62 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     margin-top: 6px;
 }
 
+/* ============ JOURNEY EXPANDABLE ============ */
+.journey-stop[data-expandable] {
+    cursor: pointer;
+}
+
+.expand-hint {
+    font-size: .65rem;
+    font-weight: 500;
+    color: var(--accent-blue);
+    opacity: .6;
+    margin-left: 8px;
+    letter-spacing: .04em;
+    transition: opacity var(--transition);
+}
+
+.journey-stop.expanded .expand-hint { opacity: 0; }
+
+.journey-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .5s cubic-bezier(.4,0,.2,1), opacity .4s, margin .4s;
+    opacity: 0;
+    margin-top: 0;
+}
+
+.journey-stop.expanded .journey-details {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 14px;
+}
+
+.detail-row {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+.detail-label {
+    flex-shrink: 0;
+    width: 80px;
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.detail-value {
+    font-size: .85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
 /* ============ SKILLS ============ */
 .skills-grid {
     display: grid;
@@ -424,6 +480,16 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 }
 
 .skill-icon { font-size: 1.5rem; }
+
+.skill-icon-wrap.glow-entrance {
+    animation: iconGlow 1.5s ease-out forwards;
+}
+
+@keyframes iconGlow {
+    0% { box-shadow: 0 0 0 rgba(68,138,255,0); }
+    30% { box-shadow: 0 0 20px rgba(68,138,255,.5), 0 0 40px rgba(0,230,118,.3); }
+    100% { box-shadow: 0 0 0 rgba(68,138,255,0); }
+}
 
 .skill-card h3 {
     font-family: var(--font-heading);

@@ -625,4 +625,33 @@
         });
     })();
 
+    // ============ EXPANDABLE JOURNEY STOPS ============
+    document.querySelectorAll('.journey-stop[data-expandable]').forEach(function (stop) {
+        stop.addEventListener('click', function () {
+            var wasExpanded = stop.classList.contains('expanded');
+            document.querySelectorAll('.journey-stop.expanded').forEach(function (s) {
+                s.classList.remove('expanded');
+            });
+            if (!wasExpanded) stop.classList.add('expanded');
+        });
+    });
+
+    // ============ SKILL ICON GLOW ON FIRST APPEARANCE ============
+    var glowObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                var icons = entry.target.querySelectorAll('.skill-icon-wrap');
+                icons.forEach(function (icon, i) {
+                    setTimeout(function () {
+                        icon.classList.add('glow-entrance');
+                    }, i * 150);
+                });
+                glowObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+
+    var skillsGrid = document.querySelector('.skills-grid');
+    if (skillsGrid) glowObserver.observe(skillsGrid);
+
 })();

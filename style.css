@@ -478,6 +478,12 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 
 .skill-icon { font-size: 1.5rem; }
 
+.skill-icon-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
 .skill-icon-wrap.glow-entrance {
     animation: iconGlow 1.5s ease-out forwards;
 }

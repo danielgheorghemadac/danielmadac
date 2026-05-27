@@ -53,7 +53,7 @@
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 212, 255, ${this.opacity})`;
+            ctx.fillStyle = `rgba(68, 138, 255, ${this.opacity})`;
             ctx.fill();
         }
     }
@@ -77,7 +77,7 @@
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(0, 212, 255, ${opacity})`;
+                    ctx.strokeStyle = `rgba(68, 138, 255, ${opacity})`;
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
@@ -318,7 +318,7 @@
         var glow = document.getElementById('cursorGlow');
         if (!glow) return;
 
-        glow.style.cssText = 'position:fixed;top:0;left:0;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:9999;opacity:0;transition:opacity 0.3s;background:radial-gradient(circle,rgba(0,212,255,0.15) 0%,rgba(138,43,226,0.08) 40%,transparent 70%);filter:blur(2px);mix-blend-mode:screen;will-change:transform;';
+        glow.style.cssText = 'position:fixed;top:0;left:0;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:9999;opacity:0;transition:opacity 0.3s;background:radial-gradient(circle,rgba(68,138,255,0.15) 0%,rgba(0,230,118,0.08) 40%,transparent 70%);filter:blur(2px);mix-blend-mode:screen;will-change:transform;';
 
         var targetX = 0, targetY = 0;
         var currentX = 0, currentY = 0;
@@ -357,14 +357,14 @@
         var rCtx = radarCanvas.getContext('2d');
 
         var skills = [
-            { label: 'Fabrication', value: 92, color: '#00d4ff' },
-            { label: 'Design & CAD', value: 85, color: '#8a2be2' },
-            { label: 'Code', value: 80, color: '#00ffc8' },
-            { label: 'Web & Apps', value: 78, color: '#ff6ec7' },
-            { label: 'Electronics', value: 86, color: '#ffa500' },
-            { label: 'Photography', value: 82, color: '#ff4444' },
-            { label: 'AI & Automation', value: 75, color: '#44ff44' },
-            { label: 'Cross-Platform', value: 90, color: '#ffdd44' }
+            { label: 'Fabrication', value: 92, color: '#448aff' },
+            { label: 'Design & CAD', value: 85, color: '#00e676' },
+            { label: 'Code', value: 80, color: '#66aaff' },
+            { label: 'Web & Apps', value: 78, color: '#33f296' },
+            { label: 'Electronics', value: 86, color: '#5599ff' },
+            { label: 'Photography', value: 82, color: '#00cc66' },
+            { label: 'AI & Automation', value: 75, color: '#7bbaff' },
+            { label: 'Cross-Platform', value: 90, color: '#66ffaa' }
         ];
 
         var numSkills = skills.length;
@@ -413,7 +413,7 @@
                     else rCtx.lineTo(x, y);
                 }
                 rCtx.closePath();
-                rCtx.strokeStyle = 'rgba(0, 212, 255, ' + (0.08 + ring * 0.03) + ')';
+                rCtx.strokeStyle = 'rgba(68, 138, 255, ' + (0.08 + ring * 0.03) + ')';
                 rCtx.lineWidth = 1;
                 rCtx.stroke();
             }
@@ -424,7 +424,7 @@
                 rCtx.beginPath();
                 rCtx.moveTo(cx, cy);
                 rCtx.lineTo(cx + maxR * Math.cos(angle), cy + maxR * Math.sin(angle));
-                rCtx.strokeStyle = 'rgba(0, 212, 255, 0.12)';
+                rCtx.strokeStyle = 'rgba(68, 138, 255, 0.12)';
                 rCtx.lineWidth = 1;
                 rCtx.stroke();
             }
@@ -445,14 +445,14 @@
 
             // Gradient fill
             var gradient = rCtx.createLinearGradient(cx - maxR, cy - maxR, cx + maxR, cy + maxR);
-            gradient.addColorStop(0, 'rgba(0, 212, 255, 0.25)');
-            gradient.addColorStop(0.5, 'rgba(138, 43, 226, 0.18)');
-            gradient.addColorStop(1, 'rgba(0, 255, 200, 0.2)');
+            gradient.addColorStop(0, 'rgba(68, 138, 255, 0.25)');
+            gradient.addColorStop(0.5, 'rgba(0, 230, 118, 0.18)');
+            gradient.addColorStop(1, 'rgba(68, 138, 255, 0.2)');
             rCtx.fillStyle = gradient;
             rCtx.fill();
 
             // Stroke around data area
-            rCtx.strokeStyle = 'rgba(0, 212, 255, 0.7)';
+            rCtx.strokeStyle = 'rgba(68, 138, 255, 0.7)';
             rCtx.lineWidth = 2;
             rCtx.stroke();
 

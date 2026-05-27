@@ -3,11 +3,8 @@
     --bg-secondary: #0e0e18;
     --bg-card: #141425;
     --bg-card-hover: #1a1a35;
-    --accent-cyan: #00b4d8;
-    --accent-green: #00e676;
     --accent-blue: #448aff;
-    --accent-purple: #7b2ff7;
-    --accent-magenta: #e040fb;
+    --accent-green: #00e676;
     --accent-red: #ff4757;
     --gradient-main: linear-gradient(135deg, #448aff 0%, #00e676 100%);
     --gradient-subtle: linear-gradient(135deg, rgba(68,138,255,.12), rgba(0,230,118,.12));
@@ -15,8 +12,8 @@
     --text-secondary: #b0b8c8;
     --text-muted: #6a7080;
     --border: rgba(255,255,255,.08);
-    --glow-cyan: 0 0 30px rgba(68,138,255,.3);
-    --glow-purple: 0 0 30px rgba(0,230,118,.3);
+    --glow-blue: 0 0 30px rgba(68,138,255,.3);
+    --glow-green: 0 0 30px rgba(0,230,118,.3);
     --radius: 16px;
     --radius-sm: 10px;
     --transition: .35s cubic-bezier(.4,0,.2,1);
@@ -354,7 +351,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     position: absolute;
     inset: -4px;
     border-radius: 50%;
-    border: 2px solid var(--accent-cyan);
+    border: 2px solid var(--accent-blue);
     opacity: 0;
 }
 
@@ -980,7 +977,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     justify-content: center;
     gap: 24px;
     padding: 18px 24px;
-    background: linear-gradient(135deg, rgba(68,138,255,.08), rgba(123,47,247,.08));
+    background: linear-gradient(135deg, rgba(68,138,255,.08), rgba(0,230,118,.08));
     border-bottom: 1px solid var(--border);
     z-index: 10;
     flex-wrap: wrap;

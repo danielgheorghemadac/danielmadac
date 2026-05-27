@@ -124,13 +124,18 @@
         document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
     });
 
+    function closeMenu() {
+        navBurger.classList.remove('active');
+        navLinks.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
     navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            navBurger.classList.remove('active');
-            navLinks.classList.remove('open');
-            document.body.style.overflow = '';
-        });
+        link.addEventListener('click', closeMenu);
     });
+
+    var navClose = document.getElementById('navClose');
+    if (navClose) navClose.addEventListener('click', closeMenu);
 
     // ============ COUNTER ANIMATION ============
     function animateCounters() {

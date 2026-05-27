@@ -89,6 +89,8 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     gap: 32px;
 }
 
+.nav-close { display: none; }
+
 .nav-links a {
     font-size: .875rem;
     font-weight: 500;
@@ -1392,6 +1394,26 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     }
 
     .nav-links.open { display: flex; }
+
+    .nav-close {
+        display: block;
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        font-size: 2.5rem;
+        color: var(--text-secondary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        line-height: 1;
+        padding: 8px;
+        transition: color var(--transition), transform var(--transition);
+    }
+
+    .nav-close:hover {
+        color: var(--accent-blue);
+        transform: rotate(90deg);
+    }
 
     .nav-links a {
         font-size: 1.3rem;

@@ -864,6 +864,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     position: relative;
     transform-style: preserve-3d;
     transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 380px;
 }
 
 .vivatech-card.flipped .vivatech-flip-inner {
@@ -883,6 +884,10 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     display: flex;
     align-items: center;
     justify-content: center;
+    background: var(--bg-card);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 28px 20px;
+    overflow: hidden;
 }
 
 .badge-tap-hint {

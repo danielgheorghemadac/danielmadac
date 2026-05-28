@@ -943,9 +943,10 @@
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                var user = (userInput.value || '').trim().toLowerCase();
+                var user = (userInput.value || '').trim().toLowerCase().replace(/\s+/g, '');
                 var pass = passInput.value || '';
-                if (user === 'daniel madac' && pass === 'Claudecode2026') {
+                var validUser = user === 'danielmadac' || user === 'daniel' || user === 'madac';
+                if (validUser && pass === 'Claudecode2026') {
                     errorEl.textContent = '';
                     loginEl.hidden = true;
                     revealEl.hidden = false;

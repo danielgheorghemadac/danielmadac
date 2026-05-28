@@ -1051,6 +1051,8 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    transform: translateZ(0);
+    overflow: hidden;
 }
 
 .flip-card-front {
@@ -1062,8 +1064,17 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 }
 
 .project-card .flip-card-front {
-    overflow: hidden;
-    border-radius: var(--radius);
+    padding: 0;
+}
+
+.project-card .project-image {
+    border-radius: 0;
+    border-top-left-radius: calc(var(--radius) - 1px);
+    border-top-right-radius: calc(var(--radius) - 1px);
+}
+
+.project-card .project-info {
+    background: var(--bg-card);
 }
 
 .flip-card-back {

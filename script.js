@@ -951,26 +951,42 @@
         var fab = document.getElementById('shareFab');
         var modal = document.getElementById('shareModal');
         var close = document.getElementById('shareClose');
+        var back = document.getElementById('shareBack');
         var copy = document.getElementById('shareCopy');
         var native = document.getElementById('shareNative');
+        var qrWrap = document.querySelector('.share-qr-wrap');
         if (!fab || !modal) return;
 
         var shareUrl = 'https://danielgheorghemadac.github.io/danielmadac';
+        var qrZoomTimer = null;
+
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+            if (qrWrap) qrWrap.classList.remove('zoomed');
+            if (qrZoomTimer) clearTimeout(qrZoomTimer);
+        }
 
         fab.addEventListener('click', function() {
             modal.classList.add('open');
             document.body.style.overflow = 'hidden';
         });
-        close.addEventListener('click', function() {
-            modal.classList.remove('open');
-            document.body.style.overflow = '';
-        });
+        close.addEventListener('click', closeModal);
+        if (back) back.addEventListener('click', closeModal);
         modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.classList.remove('open');
-                document.body.style.overflow = '';
-            }
+            if (e.target === modal) closeModal();
         });
+
+        if (qrWrap) {
+            qrWrap.addEventListener('click', function(e) {
+                e.stopPropagation();
+                qrWrap.classList.add('zoomed');
+                if (qrZoomTimer) clearTimeout(qrZoomTimer);
+                qrZoomTimer = setTimeout(function() {
+                    qrWrap.classList.remove('zoomed');
+                }, 10000);
+            });
+        }
 
         if (copy) {
             copy.addEventListener('click', function() {

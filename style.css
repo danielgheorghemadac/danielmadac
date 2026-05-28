@@ -912,11 +912,23 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 
 /* ============ CONTACT ============ */
 .contact-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 140px);
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 48px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.contact-emoji {
+    font-size: 2rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
 }
 
 .contact-card {
@@ -1725,12 +1737,65 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     display: inline-block;
     margin-bottom: 24px;
     box-shadow: 0 0 60px rgba(68,138,255,.3);
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center center;
+    cursor: pointer;
+}
+.share-qr-wrap.zoomed {
+    transform: scale(1.5);
+    box-shadow: 0 0 100px rgba(0,230,118,.45);
 }
 .share-qr {
     width: 260px;
     height: 260px;
     display: block;
     border-radius: 8px;
+    pointer-events: none;
+}
+.share-qr-hint {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: .7rem;
+    color: var(--accent-green);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    opacity: 1;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.share-qr-wrap.zoomed + .share-content .share-qr-hint,
+.share-qr-wrap.zoomed .share-qr-hint {
+    opacity: 0;
+}
+
+.share-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .85rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    z-index: 2;
+}
+.share-back:hover {
+    background: rgba(68,138,255,0.15);
+    border-color: var(--accent-blue);
+    transform: translateX(-4px);
 }
 .share-content h2 {
     font-family: var(--font-heading);

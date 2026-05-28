@@ -493,6 +493,42 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     height: 40px;
 }
 
+.chart-explainer {
+    max-width: 520px;
+    margin: 0 auto 24px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(68,138,255,.06), rgba(0,230,118,.06));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.chart-explainer-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.chart-explainer-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.chart-explainer-text strong {
+    font-family: var(--font-heading);
+    font-size: .85rem;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: .04em;
+}
+.chart-explainer-text span {
+    font-size: .78rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
 .skill-icon-wrap.glow-entrance {
     animation: iconGlow 1.5s ease-out forwards;
 }
@@ -820,6 +856,193 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     background: var(--gradient-main);
     max-width: 420px;
     width: 100%;
+    perspective: 1500px;
+    cursor: pointer;
+}
+
+.vivatech-flip-inner {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vivatech-card.flipped .vivatech-flip-inner {
+    transform: rotateY(180deg);
+}
+
+.vivatech-front,
+.vivatech-back {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.vivatech-back {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-tap-hint {
+    margin-top: 18px;
+    font-size: .7rem;
+    color: var(--accent-blue);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .6;
+}
+
+/* Login on the back */
+.badge-login,
+.badge-reveal {
+    text-align: center;
+    width: 100%;
+    padding: 12px 4px;
+}
+
+.badge-reveal[hidden] { display: none; }
+
+.badge-lock {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+}
+
+.badge-login-title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+}
+
+.badge-login-sub {
+    font-size: .85rem;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+}
+
+.badge-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.04);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: .9rem;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color var(--transition), background var(--transition);
+}
+
+.badge-input:focus {
+    border-color: var(--accent-blue);
+    background: rgba(68,138,255,.06);
+}
+
+.badge-login-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 100px;
+    background: var(--gradient-main);
+    color: #fff;
+    font-weight: 600;
+    font-size: .9rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: transform var(--transition);
+}
+
+.badge-login-btn:hover { transform: translateY(-1px); }
+
+.badge-login-error {
+    color: #ff6b6b;
+    font-size: .8rem;
+    margin-top: 8px;
+    min-height: 18px;
+}
+
+@keyframes formShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+#badgeLoginForm.shake { animation: formShake 0.4s ease; }
+
+.badge-login-back {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 16px;
+    color: var(--text-secondary);
+    font-size: .75rem;
+    margin-top: 14px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: border-color var(--transition), color var(--transition);
+}
+
+.badge-login-back:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+/* Revealed badge (real VivaTech style) */
+.badge-reveal {
+    background: #ffffff;
+    color: #000;
+    border-radius: calc(var(--radius) - 2px);
+    padding: 22px 16px;
+}
+
+.badge-reveal-name {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: .04em;
+    margin-bottom: 22px;
+}
+
+.badge-reveal-school {
+    font-size: .7rem;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: .05em;
+    margin-bottom: 14px;
+}
+
+.badge-reveal-qr {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.badge-reveal-qr img {
+    width: 75%;
+    max-width: 220px;
+    height: auto;
+    border-radius: 6px;
+}
+
+.badge-reveal-type {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: .25em;
+    color: #000;
+    margin-bottom: 8px;
+}
+
+.badge-reveal .badge-login-back {
+    color: #666;
+    border-color: #ccc;
 }
 
 .badge-glow {

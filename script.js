@@ -714,41 +714,78 @@
             ctx.shadowBlur = 0;
             ctx.restore();
 
-            // Draw nodes (front to back order matters for occlusion)
+            // Draw DNA-style cells (front to back order matters for occlusion)
             sorted.forEach(function(p) {
-                var size = (5 + (p.node.value / 100) * 7) * p.scale;
+                var baseSize = (8 + (p.node.value / 100) * 14) * p.scale;
                 var isHover = hoveredIndex === p.node.index;
-                if (isHover) size *= 1.4;
+                if (isHover) baseSize *= 1.25;
+                // Subtle organic wobble
+                var wobble = 1 + Math.sin(t * 0.002 + p.node.pulse) * 0.05;
+                var size = baseSize * wobble;
 
-                // Glow
+                // Outer membrane glow halo
+                var halo = ctx.createRadialGradient(p.sx, p.sy, size * 0.5, p.sx, p.sy, size * 2.4);
+                halo.addColorStop(0, p.node.color + 'aa');
+                halo.addColorStop(0.4, p.node.color + '33');
+                halo.addColorStop(1, 'rgba(0,0,0,0)');
                 ctx.beginPath();
-                ctx.arc(p.sx, p.sy, size * 2.2, 0, Math.PI * 2);
-                ctx.fillStyle = p.node.color;
-                ctx.globalAlpha = 0.18 + (p.z + 1) * 0.08;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-
-                // Body
-                ctx.beginPath();
-                ctx.arc(p.sx, p.sy, size, 0, Math.PI * 2);
-                var nodeGrad = ctx.createRadialGradient(p.sx - size * 0.3, p.sy - size * 0.3, 0, p.sx, p.sy, size);
-                nodeGrad.addColorStop(0, '#ffffff');
-                nodeGrad.addColorStop(0.4, p.node.color);
-                nodeGrad.addColorStop(1, p.node.color);
-                ctx.fillStyle = nodeGrad;
+                ctx.arc(p.sx, p.sy, size * 2.4, 0, Math.PI * 2);
+                ctx.fillStyle = halo;
                 ctx.fill();
 
-                // Outline ring on hover
+                // Cell membrane (outer ring)
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, size * 1.55, 0, Math.PI * 2);
+                ctx.strokeStyle = p.node.color + (isHover ? 'cc' : '88');
+                ctx.lineWidth = 1.3;
+                ctx.stroke();
+
+                // Cytoplasm (mid-tone fill)
+                var cyto = ctx.createRadialGradient(p.sx - size * 0.3, p.sy - size * 0.3, 0, p.sx, p.sy, size * 1.5);
+                cyto.addColorStop(0, p.node.color + '66');
+                cyto.addColorStop(0.7, p.node.color + '22');
+                cyto.addColorStop(1, p.node.color + '11');
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, size * 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = cyto;
+                ctx.fill();
+
+                // Nucleus (bright core)
+                var nuc = ctx.createRadialGradient(p.sx - size * 0.2, p.sy - size * 0.2, 0, p.sx, p.sy, size * 0.7);
+                nuc.addColorStop(0, '#ffffff');
+                nuc.addColorStop(0.5, p.node.color);
+                nuc.addColorStop(1, p.node.color);
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, size * 0.7, 0, Math.PI * 2);
+                ctx.fillStyle = nuc;
+                ctx.fill();
+
+                // Organelles — small algorithm dots orbiting inside the cell
+                var orgCount = 3;
+                for (var o = 0; o < orgCount; o++) {
+                    var oAngle = t * 0.001 + p.node.pulse + (o / orgCount) * Math.PI * 2;
+                    var oR = size * 1.1;
+                    var ox = p.sx + Math.cos(oAngle) * oR;
+                    var oy = p.sy + Math.sin(oAngle) * oR;
+                    ctx.beginPath();
+                    ctx.arc(ox, oy, 1.8, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.globalAlpha = 0.85;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+
+                // Hover ring
                 if (isHover) {
                     ctx.beginPath();
-                    ctx.arc(p.sx, p.sy, size + 5, 0, Math.PI * 2);
+                    ctx.arc(p.sx, p.sy, size * 1.85, 0, Math.PI * 2);
                     ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 1.5;
+                    ctx.lineWidth = 2;
                     ctx.stroke();
                 }
 
-                // Label
-                var labelDist = size + 14;
+                // Label — always show name + percentage for clarity
+                var labelDist = size * 1.7 + 10;
                 var labelOffsetX = 0, labelOffsetY = 0;
                 if (Math.abs(p.sx - cx) > Math.abs(p.sy - cy)) {
                     labelOffsetX = (p.sx > cx) ? labelDist : -labelDist;
@@ -759,15 +796,14 @@
                     ctx.textAlign = 'center';
                     ctx.textBaseline = p.sy > cy ? 'top' : 'bottom';
                 }
-                ctx.font = (isHover ? '600 12px ' : '500 ' + (window.innerWidth < 768 ? '10' : '11') + 'px ') + 'Poppins, sans-serif';
-                ctx.fillStyle = isHover ? '#ffffff' : 'rgba(255,255,255,' + (0.5 + p.z * 0.35) + ')';
+                ctx.font = '600 ' + (window.innerWidth < 768 ? '10' : '11') + 'px Poppins, sans-serif';
+                ctx.fillStyle = isHover ? '#ffffff' : 'rgba(255,255,255,' + (0.55 + p.z * 0.35) + ')';
                 var lbl = (window.innerWidth < 768) ? p.node.shortLabel : p.node.label;
                 ctx.fillText(lbl, p.sx + labelOffsetX, p.sy + labelOffsetY);
-                if (isHover) {
-                    ctx.font = '700 13px Poppins, sans-serif';
-                    ctx.fillStyle = p.node.color;
-                    ctx.fillText(p.node.value + '%', p.sx + labelOffsetX, p.sy + labelOffsetY + (labelOffsetY !== 0 ? (labelOffsetY > 0 ? 14 : -14) : 14));
-                }
+                ctx.font = '700 ' + (window.innerWidth < 768 ? '9' : '10') + 'px Poppins, sans-serif';
+                ctx.fillStyle = p.node.color;
+                var pctY = labelOffsetY + (labelOffsetY !== 0 ? (labelOffsetY > 0 ? 12 : -12) : 12);
+                ctx.fillText(p.node.value + '%', p.sx + labelOffsetX, p.sy + pctY);
             });
         }
 
@@ -866,6 +902,62 @@
         // Kick off
         for (var i = 0; i < 8; i++) spawnPacket();
         requestAnimationFrame(loop);
+    })();
+
+    // ============ VIVATECH BADGE LOGIN ============
+    (function initBadgeLogin() {
+        var card = document.getElementById('vivatechCard');
+        if (!card) return;
+        var form = document.getElementById('badgeLoginForm');
+        var userInput = document.getElementById('badgeUser');
+        var passInput = document.getElementById('badgePass');
+        var errorEl = document.getElementById('badgeLoginError');
+        var loginEl = document.getElementById('badgeLogin');
+        var revealEl = document.getElementById('badgeReveal');
+        var backBtn = document.getElementById('badgeLoginBack');
+        var revealBack = document.getElementById('badgeRevealBack');
+        var back = document.querySelector('.vivatech-back');
+
+        function flip() { card.classList.add('flipped'); }
+        function unflip() {
+            card.classList.remove('flipped');
+            setTimeout(function() {
+                if (loginEl) loginEl.hidden = false;
+                if (revealEl) revealEl.hidden = true;
+                if (userInput) userInput.value = '';
+                if (passInput) passInput.value = '';
+                if (errorEl) errorEl.textContent = '';
+            }, 700);
+        }
+
+        card.addEventListener('click', function(e) {
+            if (card.classList.contains('flipped')) return;
+            if (e.target.closest('button, input, form')) return;
+            flip();
+        });
+
+        if (back) back.addEventListener('click', function(e) { e.stopPropagation(); });
+        if (backBtn) backBtn.addEventListener('click', function(e) { e.stopPropagation(); unflip(); });
+        if (revealBack) revealBack.addEventListener('click', function(e) { e.stopPropagation(); unflip(); });
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var user = (userInput.value || '').trim().toLowerCase();
+                var pass = passInput.value || '';
+                if (user === 'daniel madac' && pass === 'Claudecode2026') {
+                    errorEl.textContent = '';
+                    loginEl.hidden = true;
+                    revealEl.hidden = false;
+                } else {
+                    errorEl.textContent = 'Wrong name or password';
+                    passInput.value = '';
+                    form.classList.remove('shake');
+                    void form.offsetWidth;
+                    form.classList.add('shake');
+                }
+            });
+        }
     })();
 
     // ============ EXPANDABLE JOURNEY STOPS ============

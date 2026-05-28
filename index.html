@@ -201,6 +201,13 @@
         <div class="container">
             <h2 class="section-title reveal">Skills Dashboard</h2>
             <p class="section-subtitle reveal">A polymath toolkit &mdash; from atoms to algorithms</p>
+            <div class="chart-explainer reveal">
+                <div class="chart-explainer-icon">&#129516;</div>
+                <div class="chart-explainer-text">
+                    <strong>Skill Cells of Algorithms</strong>
+                    <span>Each floating cell is one skill. Bigger cell = stronger mastery. Drag to spin in 3D.</span>
+                </div>
+            </div>
             <div class="radar-wrapper reveal">
                 <canvas id="radarChart" width="500" height="500"></canvas>
                 <div class="radar-legend" id="radarLegend"></div>
@@ -589,32 +596,58 @@
                     <h2 class="section-title">VivaTech 2026</h2>
                     <p class="section-subtitle">10th Anniversary &mdash; Find me at Europe's biggest tech event</p>
                 </div>
-                <div class="vivatech-card">
+                <div class="vivatech-card" id="vivatechCard">
                     <div class="badge-glow"></div>
-                    <div class="badge-content">
-                        <div class="badge-top">
-                            <span class="badge-event">VIVATECH</span>
-                            <span class="badge-edition">10<sup>th</sup></span>
+                    <div class="vivatech-flip-inner">
+                        <div class="badge-content vivatech-front">
+                            <div class="badge-top">
+                                <span class="badge-event">VIVATECH</span>
+                                <span class="badge-edition">10<sup>th</sup></span>
+                            </div>
+                            <div class="badge-name">Daniel Madac</div>
+                            <div class="badge-school">Institut Optique Graduate School</div>
+                            <div class="badge-type">STUDENT DELEGATE</div>
+                            <div class="badge-grid">
+                                <div class="badge-cell">
+                                    <span class="badge-label">Dates</span>
+                                    <span class="badge-value">June 17&ndash;20</span>
+                                </div>
+                                <div class="badge-cell">
+                                    <span class="badge-label">Entrance</span>
+                                    <span class="badge-value">Gate A2</span>
+                                </div>
+                                <div class="badge-cell">
+                                    <span class="badge-label">Hall</span>
+                                    <span class="badge-value">4.3</span>
+                                </div>
+                                <div class="badge-cell">
+                                    <span class="badge-label">Hours</span>
+                                    <span class="badge-value">9AM&ndash;6PM</span>
+                                </div>
+                            </div>
+                            <div class="badge-tap-hint">tap to access badge &rarr;</div>
                         </div>
-                        <div class="badge-name">Daniel Madac</div>
-                        <div class="badge-school">Institut Optique Graduate School</div>
-                        <div class="badge-type">STUDENT DELEGATE</div>
-                        <div class="badge-grid">
-                            <div class="badge-cell">
-                                <span class="badge-label">Dates</span>
-                                <span class="badge-value">June 17&ndash;20</span>
+                        <div class="badge-content vivatech-back">
+                            <div class="badge-login" id="badgeLogin">
+                                <div class="badge-lock">&#128274;</div>
+                                <h3 class="badge-login-title">Secure Access</h3>
+                                <p class="badge-login-sub">Authenticate to reveal the official VivaTech badge</p>
+                                <form id="badgeLoginForm" autocomplete="off">
+                                    <input type="text" id="badgeUser" class="badge-input" placeholder="Name" autocomplete="off">
+                                    <input type="password" id="badgePass" class="badge-input" placeholder="Password" autocomplete="off">
+                                    <button type="submit" class="badge-login-btn">Unlock</button>
+                                    <div class="badge-login-error" id="badgeLoginError"></div>
+                                </form>
+                                <button type="button" class="badge-login-back" id="badgeLoginBack">&larr; Back</button>
                             </div>
-                            <div class="badge-cell">
-                                <span class="badge-label">Entrance</span>
-                                <span class="badge-value">Gate A2</span>
-                            </div>
-                            <div class="badge-cell">
-                                <span class="badge-label">Hall</span>
-                                <span class="badge-value">4.3</span>
-                            </div>
-                            <div class="badge-cell">
-                                <span class="badge-label">Hours</span>
-                                <span class="badge-value">9AM&ndash;6PM</span>
+                            <div class="badge-reveal" id="badgeReveal" hidden>
+                                <div class="badge-reveal-name">DANIEL MADAC</div>
+                                <div class="badge-reveal-school">INSTITUT OPTIQUE GRADUATE SCHOOL</div>
+                                <div class="badge-reveal-qr">
+                                    <img src="qr-portfolio.png" alt="VivaTech Badge QR">
+                                </div>
+                                <div class="badge-reveal-type">STUDENT</div>
+                                <button type="button" class="badge-login-back" id="badgeRevealBack">&larr; Back</button>
                             </div>
                         </div>
                     </div>

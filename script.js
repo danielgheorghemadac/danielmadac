@@ -540,14 +540,20 @@
         var ctx = canvas.getContext('2d');
 
         var skills = [
-            { label: 'Fabrication', shortLabel: 'Fab', value: 92, color: '#448aff' },
-            { label: 'Design & CAD', shortLabel: 'Design', value: 85, color: '#00e676' },
-            { label: 'Code', shortLabel: 'Code', value: 80, color: '#66aaff' },
-            { label: 'Web & Apps', shortLabel: 'Web', value: 78, color: '#33f296' },
-            { label: 'Electronics', shortLabel: 'Electro', value: 86, color: '#5599ff' },
-            { label: 'Photography', shortLabel: 'Photo', value: 82, color: '#00cc66' },
-            { label: 'AI & Automation', shortLabel: 'AI', value: 75, color: '#7bbaff' },
-            { label: 'Cross-Platform', shortLabel: 'Platform', value: 90, color: '#66ffaa' }
+            { label: 'Code', shortLabel: 'Code', value: 50, color: '#66aaff' },
+            { label: 'Vibe Coding', shortLabel: 'Vibe', value: 89, color: '#33f296' },
+            { label: '3D Printers', shortLabel: '3D Print', value: 90, color: '#448aff' },
+            { label: 'Wood & Alu', shortLabel: 'Wood/Alu', value: 75, color: '#00cc66' },
+            { label: 'CNC Planet', shortLabel: 'CNC', value: 85, color: '#5599ff' },
+            { label: 'Electronics', shortLabel: 'Electro', value: 65, color: '#66ffaa' },
+            { label: 'Design & CAD', shortLabel: 'Design', value: 70, color: '#7bbaff' },
+            { label: 'Web & Apps', shortLabel: 'Web', value: 77, color: '#00e676' },
+            { label: 'Photography', shortLabel: 'Photo', value: 85, color: '#88ccff' },
+            { label: 'Videography', shortLabel: 'Video', value: 77, color: '#33f296' },
+            { label: 'Cross-Platform', shortLabel: 'Platform', value: 95, color: '#5599ff' },
+            { label: 'Prototyping', shortLabel: 'Proto', value: 80, color: '#88ffcc' },
+            { label: 'Wood Crafting', shortLabel: 'Craft', value: 78, color: '#7bbaff' },
+            { label: 'AI & Automation', shortLabel: 'AI', value: 91, color: '#00e676' }
         ];
 
         var n = skills.length;

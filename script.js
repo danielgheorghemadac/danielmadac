@@ -863,17 +863,44 @@
             var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
             camera.position.z = 3;
 
-            // Globe
+            // Real Earth textures (NASA / Three.js examples — public domain)
+            var textureLoader = new THREE.TextureLoader();
+            textureLoader.crossOrigin = 'anonymous';
+
+            var earthMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+            var earthBump = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+            var earthSpec = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
+
             var globe = new THREE.Mesh(
                 new THREE.SphereGeometry(1, 64, 64),
-                new THREE.MeshPhongMaterial({ color: 0x0a1530, emissive: 0x06101f, shininess: 25, specular: 0x224488 })
+                new THREE.MeshPhongMaterial({
+                    map: earthMap,
+                    bumpMap: earthBump,
+                    bumpScale: 0.04,
+                    specularMap: earthSpec,
+                    specular: new THREE.Color(0x333333),
+                    shininess: 28
+                })
             );
             scene.add(globe);
 
-            // Wireframe overlay
+            // Cloud layer
+            var cloudsTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
+            var clouds = new THREE.Mesh(
+                new THREE.SphereGeometry(1.015, 64, 64),
+                new THREE.MeshPhongMaterial({
+                    map: cloudsTexture,
+                    transparent: true,
+                    opacity: 0.35,
+                    depthWrite: false
+                })
+            );
+            scene.add(clouds);
+
+            // Subtle wireframe overlay for tech aesthetic
             var wire = new THREE.Mesh(
-                new THREE.SphereGeometry(1.005, 32, 24),
-                new THREE.MeshBasicMaterial({ color: 0x448aff, wireframe: true, transparent: true, opacity: 0.18 })
+                new THREE.SphereGeometry(1.025, 24, 18),
+                new THREE.MeshBasicMaterial({ color: 0x448aff, wireframe: true, transparent: true, opacity: 0.08 })
             );
             scene.add(wire);
 
@@ -890,11 +917,11 @@
             );
             scene.add(atmosphere);
 
-            // Lights
-            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-            var dir = new THREE.DirectionalLight(0xffffff, 1.2);
-            dir.position.set(5, 3, 5);
-            scene.add(dir);
+            // Lights — soft ambient + sun
+            scene.add(new THREE.AmbientLight(0x4466aa, 0.35));
+            var sun = new THREE.DirectionalLight(0xffffff, 1.6);
+            sun.position.set(5, 2, 4);
+            scene.add(sun);
 
             function latLonToVec3(lat, lon, radius) {
                 var phi = (90 - lat) * Math.PI / 180;
@@ -948,35 +975,6 @@
             globe.add(createArc(cities[0], cities[1], 0x448aff, 0.2));
             globe.add(createArc(cities[1], cities[2], 0x448aff, 0.2));
             globe.add(createArc(cities[2], cities[3], 0x00e676, 0.3));
-
-            // ----- Continent surface dots (suggestive land masses) -----
-            var continents = [
-                // Europe
-                [55,10],[52,8],[50,5],[48,2],[47,15],[50,20],[58,15],[60,25],[45,25],[40,20],[42,12],
-                // Africa
-                [30,10],[25,5],[20,0],[15,-5],[10,10],[5,20],[0,25],[-5,30],[-10,25],[-15,20],[-20,25],[-25,30],[-30,25],[-30,18],[15,30],[20,35],[10,40],
-                // Asia
-                [55,40],[50,50],[45,60],[40,70],[35,80],[30,90],[25,100],[20,110],[15,105],[40,115],[35,125],[45,130],[55,90],[60,100],[50,75],
-                // North America
-                [60,-90],[55,-100],[50,-110],[45,-120],[40,-100],[35,-90],[30,-95],[25,-100],[40,-80],[45,-75],[35,-85],[28,-82],
-                // South America
-                [10,-65],[5,-70],[0,-65],[-5,-60],[-10,-55],[-15,-60],[-20,-55],[-25,-60],[-30,-65],[-35,-65],[-15,-75],
-                // Australia
-                [-20,135],[-25,140],[-30,145],[-25,125],[-30,135],[-22,148],
-                // Greenland
-                [72,-40],[75,-30],[78,-35]
-            ];
-            var landGeo = new THREE.BufferGeometry();
-            var landPositions = new Float32Array(continents.length * 3);
-            continents.forEach(function(p, i) {
-                var v = latLonToVec3(p[0], p[1], 1.012);
-                landPositions[i*3] = v.x;
-                landPositions[i*3+1] = v.y;
-                landPositions[i*3+2] = v.z;
-            });
-            landGeo.setAttribute('position', new THREE.BufferAttribute(landPositions, 3));
-            var landMat = new THREE.PointsMaterial({ color: 0x6aa8ff, size: 0.04, sizeAttenuation: true, transparent: true, opacity: 0.85 });
-            globe.add(new THREE.Points(landGeo, landMat));
 
             // ----- Equator + Prime Meridian rings -----
             function ringGeometry(rotationX, rotationY) {
@@ -1064,6 +1062,9 @@
                     globe.rotation.y += 0.002;
                     wire.rotation.copy(globe.rotation);
                 }
+                // Clouds drift slightly faster than globe
+                clouds.rotation.copy(globe.rotation);
+                clouds.rotation.y += t * 0.000005;
                 // Pulse the city glows
                 var pulse = 1 + Math.sin(t * 0.003) * 0.15;
                 cityMeshes.forEach(function(cm) {

@@ -81,10 +81,58 @@
         </div>
     </div>
 
+    <div class="looking-banner" id="lookingBanner">
+        <span class="looking-label">Looking For</span>
+        <div class="looking-items">
+            <span class="looking-item">Deeptech Startups</span>
+            <span class="looking-item">Optics &amp; Photonics</span>
+            <span class="looking-item">FabLab Partnerships</span>
+            <span class="looking-item">Hard Challenges</span>
+        </div>
+    </div>
+
     <section class="section journey" id="about">
         <div class="container">
             <h2 class="section-title reveal">My Journey</h2>
             <p class="section-subtitle reveal">4 countries. 6 languages. One relentless drive to build.</p>
+            <div class="journey-map reveal">
+                <svg viewBox="0 0 500 320" class="europe-map" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#448aff" stop-opacity="0.15"/>
+                            <stop offset="100%" stop-color="#00e676" stop-opacity="0.05"/>
+                        </linearGradient>
+                        <filter id="mapGlow">
+                            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+                    </defs>
+                    <path d="M80 140 Q90 100 130 90 L180 75 Q220 70 260 80 L320 70 Q370 75 410 95 L440 130 Q450 170 435 210 L405 250 Q360 275 310 270 L250 275 Q190 270 150 250 L110 220 Q75 190 80 140 Z" fill="url(#mapGrad)" stroke="rgba(68,138,255,0.25)" stroke-width="1" stroke-dasharray="3 3"/>
+                    <path d="M395 160 Q345 195 270 215" fill="none" stroke="#448aff" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="map-arc-anim"/>
+                    <path d="M270 215 Q280 185 295 150" fill="none" stroke="#448aff" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5" class="map-arc-anim"/>
+                    <path d="M295 150 Q235 160 175 175" fill="none" stroke="#00e676" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" class="map-arc-anim"/>
+                    <g class="map-city">
+                        <circle cx="395" cy="160" r="18" fill="rgba(68,138,255,0.2)" class="pulse-ring"/>
+                        <circle cx="395" cy="160" r="5" fill="#448aff" filter="url(#mapGlow)"/>
+                        <text x="408" y="164" fill="#fff" font-size="11" font-weight="500">Romania</text>
+                    </g>
+                    <g class="map-city">
+                        <circle cx="270" cy="215" r="18" fill="rgba(68,138,255,0.2)" class="pulse-ring"/>
+                        <circle cx="270" cy="215" r="5" fill="#448aff" filter="url(#mapGlow)"/>
+                        <text x="283" y="219" fill="#fff" font-size="11" font-weight="500">Italy</text>
+                    </g>
+                    <g class="map-city">
+                        <circle cx="295" cy="150" r="18" fill="rgba(68,138,255,0.2)" class="pulse-ring"/>
+                        <circle cx="295" cy="150" r="5" fill="#448aff" filter="url(#mapGlow)"/>
+                        <text x="308" y="154" fill="#fff" font-size="11" font-weight="500">Austria</text>
+                    </g>
+                    <g class="map-city">
+                        <circle cx="175" cy="175" r="22" fill="rgba(0,230,118,0.25)" class="pulse-ring-active"/>
+                        <circle cx="175" cy="175" r="6" fill="#00e676" filter="url(#mapGlow)"/>
+                        <text x="120" y="165" fill="#00e676" font-size="12" font-weight="700">France &#9733;</text>
+                    </g>
+                </svg>
+            </div>
             <div class="journey-path">
                 <div class="journey-stop reveal" data-expandable>
                     <div class="journey-marker">
@@ -544,6 +592,12 @@
                     <img src="icons/call.png" alt="Call Me" class="contact-icon-img">
                     <span class="contact-label">Call Me</span>
                 </a>
+                <button class="contact-card reveal save-contact-btn" id="saveContact" type="button">
+                    <span class="contact-icon-svg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+                    </span>
+                    <span class="contact-label">Save Contact</span>
+                </button>
             </div>
             <div class="contact-quote reveal">
                 <blockquote>&ldquo;I'm a human LLM for languages of software and hardware &mdash; give me the hard challenge.&rdquo;</blockquote>
@@ -555,6 +609,37 @@
         <p>&copy; 2026 Daniel Madac &mdash; Built for VivaTech</p>
         <button class="hard-refresh-btn" id="hardRefresh" title="Force reload (clear cache)">&#8635;</button>
     </footer>
+
+    <div class="achievements" id="achievements">
+        <button class="achievements-toggle" id="achievementsToggle" aria-label="Achievements">
+            <span class="achievements-icon">&#127942;</span>
+            <span class="achievements-count"><span id="badgeCount">0</span>/7</span>
+        </button>
+        <div class="achievements-panel" id="achievementsPanel">
+            <h3>Achievements</h3>
+            <div class="badge-list" id="badgeList"></div>
+        </div>
+    </div>
+
+    <button class="share-fab" id="shareFab" aria-label="Share portfolio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+
+    <div class="share-modal" id="shareModal">
+        <button class="share-close" id="shareClose" aria-label="Close">&times;</button>
+        <div class="share-content">
+            <div class="share-qr-wrap">
+                <img src="qr-portfolio.png" alt="QR Code" class="share-qr">
+            </div>
+            <h2>Daniel Madac</h2>
+            <p class="share-tagline">The Human LLM for Software &amp; Hardware</p>
+            <p class="share-url">danielgheorghemadac.github.io/danielmadac</p>
+            <div class="share-actions">
+                <button class="share-copy" id="shareCopy">Copy Link</button>
+                <button class="share-native" id="shareNative">Share</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js?v=3"></script>
     <script src="i18n.js?v=3"></script>

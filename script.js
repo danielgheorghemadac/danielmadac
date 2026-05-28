@@ -259,6 +259,7 @@
                 if (tapTimer) clearTimeout(tapTimer);
                 var fact = facts[factIndex % facts.length];
                 factIndex++;
+                if (window.__unlockBadge) window.__unlockBadge('hidden-gem');
 
                 var popup = document.createElement('div');
                 popup.className = 'secret-fact';
@@ -787,5 +788,218 @@
 
     var skillsGrid = document.querySelector('.skills-grid');
     if (skillsGrid) glowObserver.observe(skillsGrid);
+
+    // ============ ACHIEVEMENT SYSTEM ============
+    (function initAchievements() {
+        var BADGES = [
+            { id: 'welcome', icon: '👋', name: 'Welcome' },
+            { id: 'explorer', icon: '🗺️', name: 'Explorer' },
+            { id: 'polyglot', icon: '🌍', name: 'Polyglot' },
+            { id: 'curious', icon: '🔍', name: 'Curious Mind' },
+            { id: 'flipper', icon: '🃏', name: 'Card Flipper' },
+            { id: 'connector', icon: '🤝', name: 'Connector' },
+            { id: 'hidden-gem', icon: '💎', name: 'Hidden Gem' }
+        ];
+
+        var unlocked = {};
+        try { unlocked = JSON.parse(localStorage.getItem('dm_badges') || '{}'); } catch(e) {}
+
+        var listEl = document.getElementById('badgeList');
+        var countEl = document.getElementById('badgeCount');
+        var toggleEl = document.getElementById('achievementsToggle');
+        var panelEl = document.getElementById('achievementsPanel');
+
+        function render() {
+            if (!listEl) return;
+            listEl.innerHTML = '';
+            var count = 0;
+            BADGES.forEach(function(b) {
+                var isUnlocked = !!unlocked[b.id];
+                if (isUnlocked) count++;
+                var div = document.createElement('div');
+                div.className = 'badge-item' + (isUnlocked ? ' unlocked' : '');
+                div.innerHTML = '<span class="badge-icon">' + (isUnlocked ? b.icon : '🔒') + '</span><span class="badge-name">' + b.name + '</span>';
+                listEl.appendChild(div);
+            });
+            if (countEl) countEl.textContent = count;
+        }
+
+        function showToast(badge) {
+            var toast = document.createElement('div');
+            toast.className = 'badge-toast';
+            toast.innerHTML = '<span class="badge-toast-icon">' + badge.icon + '</span><div class="badge-toast-text"><strong>Achievement Unlocked</strong>' + badge.name + '</div>';
+            document.body.appendChild(toast);
+            setTimeout(function() { toast.classList.add('visible'); }, 50);
+            setTimeout(function() {
+                toast.classList.remove('visible');
+                setTimeout(function() { toast.remove(); }, 500);
+            }, 3000);
+        }
+
+        function unlock(id) {
+            if (unlocked[id]) return;
+            unlocked[id] = Date.now();
+            try { localStorage.setItem('dm_badges', JSON.stringify(unlocked)); } catch(e) {}
+            var badge = BADGES.filter(function(b) { return b.id === id; })[0];
+            if (badge) showToast(badge);
+            render();
+        }
+
+        window.__unlockBadge = unlock;
+        render();
+
+        if (toggleEl && panelEl) {
+            toggleEl.addEventListener('click', function() {
+                panelEl.classList.toggle('open');
+            });
+            document.addEventListener('click', function(e) {
+                if (!toggleEl.contains(e.target) && !panelEl.contains(e.target)) {
+                    panelEl.classList.remove('open');
+                }
+            });
+        }
+
+        // Welcome on load
+        setTimeout(function() { unlock('welcome'); }, 1500);
+
+        // Explorer: visited all sections
+        var visited = {};
+        var sections = ['hero', 'about', 'skills', 'experience', 'projects', 'languages', 'contact'];
+        sections.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) {
+                        visited[id] = true;
+                        if (Object.keys(visited).length >= sections.length) {
+                            unlock('explorer');
+                        }
+                        obs.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.3 });
+            obs.observe(el);
+        });
+
+        // Polyglot: clicked 3+ language switcher buttons
+        var langs = {};
+        document.querySelectorAll('.lang-switcher-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                langs[btn.dataset.lang] = true;
+                if (Object.keys(langs).length >= 3) unlock('polyglot');
+            });
+        });
+
+        // Curious: expanded a journey card
+        document.querySelectorAll('.journey-stop[data-expandable]').forEach(function(stop) {
+            stop.addEventListener('click', function() {
+                if (stop.classList.contains('expanded')) unlock('curious');
+            });
+        });
+
+        // Flipper: flipped any card
+        document.addEventListener('click', function(e) {
+            var card = e.target.closest('.skill-card, .project-card');
+            if (card && card.classList.contains('flipped')) unlock('flipper');
+        });
+
+        // Connector: clicked a contact link
+        document.querySelectorAll('.contact-card').forEach(function(card) {
+            card.addEventListener('click', function() { unlock('connector'); });
+        });
+
+        // Hidden Gem: handled by DM logo triple-tap (we'll add a hook there)
+        // Done via window.__unlockBadge in the secret facts code
+    })();
+
+    // ============ VCARD DOWNLOAD ============
+    (function initVCard() {
+        var btn = document.getElementById('saveContact');
+        if (!btn) return;
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var vcard = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'FN:Daniel Madac',
+                'N:Madac;Daniel;;;',
+                'TITLE:FabLab Coordinator | Maker | Developer | Photographer',
+                'ORG:Institut Optique Graduate School',
+                'TEL;TYPE=CELL:+33652146317',
+                'EMAIL:danielgheorghemadac@icloud.com',
+                'URL:https://danielgheorghemadac.github.io/danielmadac',
+                'URL;TYPE=LinkedIn:https://linkedin.com/in/daniel-madac-3694091bb',
+                'NOTE:Met at VivaTech 2026. Looking for deeptech, optics, and FabLab opportunities.',
+                'END:VCARD'
+            ].join('\r\n');
+            var blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'Daniel_Madac.vcf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function() { URL.revokeObjectURL(url); }, 100);
+            if (window.__unlockBadge) window.__unlockBadge('connector');
+        });
+    })();
+
+    // ============ SHARE MODAL ============
+    (function initShare() {
+        var fab = document.getElementById('shareFab');
+        var modal = document.getElementById('shareModal');
+        var close = document.getElementById('shareClose');
+        var copy = document.getElementById('shareCopy');
+        var native = document.getElementById('shareNative');
+        if (!fab || !modal) return;
+
+        var shareUrl = 'https://danielgheorghemadac.github.io/danielmadac';
+
+        fab.addEventListener('click', function() {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
+        close.addEventListener('click', function() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        });
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+
+        if (copy) {
+            copy.addEventListener('click', function() {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(shareUrl).then(function() {
+                        copy.textContent = 'Copied!';
+                        copy.classList.add('copied');
+                        setTimeout(function() {
+                            copy.textContent = 'Copy Link';
+                            copy.classList.remove('copied');
+                        }, 2000);
+                    });
+                }
+            });
+        }
+
+        if (native) {
+            if (navigator.share) {
+                native.addEventListener('click', function() {
+                    navigator.share({
+                        title: 'Daniel Madac - Portfolio',
+                        text: 'Check out my portfolio',
+                        url: shareUrl
+                    }).catch(function() {});
+                });
+            } else {
+                native.style.display = 'none';
+            }
+        }
+    })();
 
 })();

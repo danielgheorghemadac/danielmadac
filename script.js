@@ -949,6 +949,68 @@
             globe.add(createArc(cities[1], cities[2], 0x448aff, 0.2));
             globe.add(createArc(cities[2], cities[3], 0x00e676, 0.3));
 
+            // ----- Continent surface dots (suggestive land masses) -----
+            var continents = [
+                // Europe
+                [55,10],[52,8],[50,5],[48,2],[47,15],[50,20],[58,15],[60,25],[45,25],[40,20],[42,12],
+                // Africa
+                [30,10],[25,5],[20,0],[15,-5],[10,10],[5,20],[0,25],[-5,30],[-10,25],[-15,20],[-20,25],[-25,30],[-30,25],[-30,18],[15,30],[20,35],[10,40],
+                // Asia
+                [55,40],[50,50],[45,60],[40,70],[35,80],[30,90],[25,100],[20,110],[15,105],[40,115],[35,125],[45,130],[55,90],[60,100],[50,75],
+                // North America
+                [60,-90],[55,-100],[50,-110],[45,-120],[40,-100],[35,-90],[30,-95],[25,-100],[40,-80],[45,-75],[35,-85],[28,-82],
+                // South America
+                [10,-65],[5,-70],[0,-65],[-5,-60],[-10,-55],[-15,-60],[-20,-55],[-25,-60],[-30,-65],[-35,-65],[-15,-75],
+                // Australia
+                [-20,135],[-25,140],[-30,145],[-25,125],[-30,135],[-22,148],
+                // Greenland
+                [72,-40],[75,-30],[78,-35]
+            ];
+            var landGeo = new THREE.BufferGeometry();
+            var landPositions = new Float32Array(continents.length * 3);
+            continents.forEach(function(p, i) {
+                var v = latLonToVec3(p[0], p[1], 1.012);
+                landPositions[i*3] = v.x;
+                landPositions[i*3+1] = v.y;
+                landPositions[i*3+2] = v.z;
+            });
+            landGeo.setAttribute('position', new THREE.BufferAttribute(landPositions, 3));
+            var landMat = new THREE.PointsMaterial({ color: 0x6aa8ff, size: 0.04, sizeAttenuation: true, transparent: true, opacity: 0.85 });
+            globe.add(new THREE.Points(landGeo, landMat));
+
+            // ----- Equator + Prime Meridian rings -----
+            function ringGeometry(rotationX, rotationY) {
+                var geo = new THREE.BufferGeometry();
+                var pts = [];
+                for (var i = 0; i <= 128; i++) {
+                    var a = (i / 128) * Math.PI * 2;
+                    pts.push(new THREE.Vector3(Math.cos(a) * 1.015, 0, Math.sin(a) * 1.015));
+                }
+                geo.setFromPoints(pts);
+                return geo;
+            }
+            var equator = new THREE.LineLoop(ringGeometry(), new THREE.LineBasicMaterial({ color: 0x00e676, transparent: true, opacity: 0.25 }));
+            globe.add(equator);
+            var meridian = new THREE.LineLoop(ringGeometry(), new THREE.LineBasicMaterial({ color: 0x448aff, transparent: true, opacity: 0.25 }));
+            meridian.rotation.x = Math.PI / 2;
+            globe.add(meridian);
+
+            // ----- Star field -----
+            var starGeo = new THREE.BufferGeometry();
+            var starCount = 600;
+            var starPos = new Float32Array(starCount * 3);
+            for (var s = 0; s < starCount; s++) {
+                var theta = Math.random() * Math.PI * 2;
+                var phi = Math.acos(2 * Math.random() - 1);
+                var r = 12 + Math.random() * 8;
+                starPos[s*3] = r * Math.sin(phi) * Math.cos(theta);
+                starPos[s*3+1] = r * Math.cos(phi);
+                starPos[s*3+2] = r * Math.sin(phi) * Math.sin(theta);
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            var stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.7, sizeAttenuation: true }));
+            scene.add(stars);
+
             // Initial rotation to show Europe
             globe.rotation.y = -0.3;
             globe.rotation.x = -0.45;
@@ -982,8 +1044,16 @@
             canvas.addEventListener('mousedown', function(e) { onStart(e.clientX, e.clientY); });
             window.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
             window.addEventListener('mouseup', onEnd);
-            canvas.addEventListener('touchstart', function(e) { var t = e.touches[0]; onStart(t.clientX, t.clientY); }, { passive: true });
-            canvas.addEventListener('touchmove', function(e) { var t = e.touches[0]; onMove(t.clientX, t.clientY); }, { passive: true });
+            canvas.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                var t = e.touches[0];
+                onStart(t.clientX, t.clientY);
+            }, { passive: false });
+            canvas.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                var t = e.touches[0];
+                onMove(t.clientX, t.clientY);
+            }, { passive: false });
             canvas.addEventListener('touchend', onEnd);
 
             // Animation loop

@@ -1550,6 +1550,9 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     width: 100% !important;
     height: 100% !important;
     cursor: grab;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 #globeCanvas:active { cursor: grabbing; }
 .globe-loading {

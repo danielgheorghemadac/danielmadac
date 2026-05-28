@@ -822,6 +822,199 @@
         });
     });
 
+    // ============ 3D GLOBE ============
+    (function initGlobe() {
+        var container = document.getElementById('globeContainer');
+        if (!container) return;
+
+        var loaded = false;
+        function load() {
+            if (loaded) return;
+            loaded = true;
+            var script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+            script.onload = build;
+            script.onerror = function() {
+                var loading = document.getElementById('globeLoading');
+                if (loading) loading.textContent = 'Globe unavailable';
+            };
+            document.head.appendChild(script);
+        }
+
+        // Lazy load when journey section is visible
+        var io = new IntersectionObserver(function(entries) {
+            entries.forEach(function(e) {
+                if (e.isIntersecting) { load(); io.disconnect(); }
+            });
+        }, { rootMargin: '200px' });
+        io.observe(container);
+
+        function build() {
+            var canvas = document.getElementById('globeCanvas');
+            var loading = document.getElementById('globeLoading');
+            if (!canvas || !window.THREE) return;
+
+            var size = container.clientWidth;
+            var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(size, size, false);
+
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+            camera.position.z = 3;
+
+            // Globe
+            var globe = new THREE.Mesh(
+                new THREE.SphereGeometry(1, 64, 64),
+                new THREE.MeshPhongMaterial({ color: 0x0a1530, emissive: 0x06101f, shininess: 25, specular: 0x224488 })
+            );
+            scene.add(globe);
+
+            // Wireframe overlay
+            var wire = new THREE.Mesh(
+                new THREE.SphereGeometry(1.005, 32, 24),
+                new THREE.MeshBasicMaterial({ color: 0x448aff, wireframe: true, transparent: true, opacity: 0.18 })
+            );
+            scene.add(wire);
+
+            // Outer atmospheric glow
+            var atmosphere = new THREE.Mesh(
+                new THREE.SphereGeometry(1.08, 32, 32),
+                new THREE.ShaderMaterial({
+                    vertexShader: 'varying vec3 vN; void main(){ vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+                    fragmentShader: 'varying vec3 vN; void main(){ float i = pow(0.6 - dot(vN, vec3(0,0,1.0)), 2.0); gl_FragColor = vec4(0.27,0.54,1.0,1.0) * i; }',
+                    blending: THREE.AdditiveBlending,
+                    side: THREE.BackSide,
+                    transparent: true
+                })
+            );
+            scene.add(atmosphere);
+
+            // Lights
+            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+            var dir = new THREE.DirectionalLight(0xffffff, 1.2);
+            dir.position.set(5, 3, 5);
+            scene.add(dir);
+
+            function latLonToVec3(lat, lon, radius) {
+                var phi = (90 - lat) * Math.PI / 180;
+                var theta = (lon + 180) * Math.PI / 180;
+                return new THREE.Vector3(
+                    -radius * Math.sin(phi) * Math.cos(theta),
+                    radius * Math.cos(phi),
+                    radius * Math.sin(phi) * Math.sin(theta)
+                );
+            }
+
+            var cities = [
+                { name: 'Romania', lat: 44.4, lon: 26.1, color: 0x448aff, size: 0.022 },
+                { name: 'Italy', lat: 41.9, lon: 12.5, color: 0x448aff, size: 0.022 },
+                { name: 'Austria', lat: 48.2, lon: 16.4, color: 0x448aff, size: 0.022 },
+                { name: 'France', lat: 48.85, lon: 2.35, color: 0x00e676, size: 0.03 }
+            ];
+
+            var cityMeshes = [];
+            cities.forEach(function(c) {
+                var pos = latLonToVec3(c.lat, c.lon, 1.005);
+                var pin = new THREE.Mesh(
+                    new THREE.SphereGeometry(c.size, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: c.color })
+                );
+                pin.position.copy(pos);
+                globe.add(pin);
+
+                var glow = new THREE.Mesh(
+                    new THREE.SphereGeometry(c.size * 2.5, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: c.color, transparent: true, opacity: 0.3 })
+                );
+                glow.position.copy(pos);
+                globe.add(glow);
+                cityMeshes.push({ glow: glow, base: c.size * 2.5, isFrance: c.name === 'France' });
+            });
+
+            // Travel arcs in order
+            function createArc(a, b, color, lift) {
+                var start = latLonToVec3(a.lat, a.lon, 1.01);
+                var end = latLonToVec3(b.lat, b.lon, 1.01);
+                var mid = start.clone().add(end).multiplyScalar(0.5);
+                mid.normalize().multiplyScalar(1 + (lift || 0.25));
+                var curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+                var points = curve.getPoints(60);
+                var geo = new THREE.BufferGeometry().setFromPoints(points);
+                var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.85 });
+                return new THREE.Line(geo, mat);
+            }
+
+            globe.add(createArc(cities[0], cities[1], 0x448aff, 0.2));
+            globe.add(createArc(cities[1], cities[2], 0x448aff, 0.2));
+            globe.add(createArc(cities[2], cities[3], 0x00e676, 0.3));
+
+            // Initial rotation to show Europe
+            globe.rotation.y = -0.3;
+            globe.rotation.x = -0.45;
+            wire.rotation.copy(globe.rotation);
+
+            // Drag controls
+            var isDragging = false;
+            var lastX = 0, lastY = 0;
+            var autoRotate = true;
+            var lastInteraction = Date.now();
+
+            function onStart(x, y) {
+                isDragging = true;
+                lastX = x; lastY = y;
+                autoRotate = false;
+                lastInteraction = Date.now();
+            }
+            function onMove(x, y) {
+                if (!isDragging) return;
+                var dx = x - lastX;
+                var dy = y - lastY;
+                globe.rotation.y += dx * 0.005;
+                globe.rotation.x += dy * 0.005;
+                globe.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, globe.rotation.x));
+                wire.rotation.copy(globe.rotation);
+                lastX = x; lastY = y;
+                lastInteraction = Date.now();
+            }
+            function onEnd() { isDragging = false; }
+
+            canvas.addEventListener('mousedown', function(e) { onStart(e.clientX, e.clientY); });
+            window.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
+            window.addEventListener('mouseup', onEnd);
+            canvas.addEventListener('touchstart', function(e) { var t = e.touches[0]; onStart(t.clientX, t.clientY); }, { passive: true });
+            canvas.addEventListener('touchmove', function(e) { var t = e.touches[0]; onMove(t.clientX, t.clientY); }, { passive: true });
+            canvas.addEventListener('touchend', onEnd);
+
+            // Animation loop
+            function animate(t) {
+                requestAnimationFrame(animate);
+                if (autoRotate || Date.now() - lastInteraction > 3000) {
+                    autoRotate = true;
+                    globe.rotation.y += 0.002;
+                    wire.rotation.copy(globe.rotation);
+                }
+                // Pulse the city glows
+                var pulse = 1 + Math.sin(t * 0.003) * 0.15;
+                cityMeshes.forEach(function(cm) {
+                    var scale = cm.isFrance ? pulse * 1.3 : pulse;
+                    cm.glow.scale.set(scale, scale, scale);
+                });
+                renderer.render(scene, camera);
+            }
+            requestAnimationFrame(animate);
+
+            // Hide loader
+            if (loading) loading.classList.add('hidden');
+
+            // Resize handling
+            window.addEventListener('resize', function() {
+                var s = container.clientWidth;
+                renderer.setSize(s, s, false);
+            });
+        }
+    })();
+
     // ============ FLIP CARDS ============
     (function initFlipCards() {
         document.querySelectorAll('.skill-card, .project-card').forEach(function(card) {

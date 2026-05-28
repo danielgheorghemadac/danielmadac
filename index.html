@@ -95,79 +95,15 @@
         <div class="container">
             <h2 class="section-title reveal">My Journey</h2>
             <p class="section-subtitle reveal">4 countries. 6 languages. One relentless drive to build.</p>
-            <div class="journey-map reveal">
-                <svg viewBox="0 0 700 480" class="europe-map" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-                    <defs>
-                        <linearGradient id="countryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#448aff" stop-opacity="0.4"/>
-                            <stop offset="100%" stop-color="#448aff" stop-opacity="0.2"/>
-                        </linearGradient>
-                        <linearGradient id="franceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#00e676" stop-opacity="0.55"/>
-                            <stop offset="100%" stop-color="#00e676" stop-opacity="0.3"/>
-                        </linearGradient>
-                        <filter id="mapGlow">
-                            <feGaussianBlur stdDeviation="3" result="blur"/>
-                            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                        </filter>
-                    </defs>
-
-                    <g class="europe-other" fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.06)" stroke-width="0.6" stroke-linejoin="round">
-                        <path d="M90 95 Q100 80 120 75 Q145 70 165 85 L185 100 L195 120 Q198 145 188 160 L170 170 Q150 175 130 165 L110 150 Q90 130 88 110 Q88 102 90 95 Z"/>
-                        <path d="M85 195 Q90 200 100 200 Q108 195 105 185 Q95 182 85 195 Z"/>
-                        <path d="M120 240 Q105 245 100 260 Q98 280 110 295 L130 310 Q165 318 200 310 L220 295 Q235 275 230 250 L215 230 Q195 220 170 222 L145 228 Q125 235 120 240 Z"/>
-                        <path d="M255 95 Q280 85 310 90 L355 100 Q380 115 388 140 L390 165 Q380 180 360 185 L320 190 Q285 188 265 175 Q248 160 248 135 Q250 110 255 95 Z"/>
-                        <path d="M345 215 Q365 210 385 215 Q400 225 405 245 Q400 268 385 278 L360 282 Q340 278 325 268 Q318 250 322 230 Q333 218 345 215 Z"/>
-                        <path d="M488 130 Q515 125 540 135 Q565 150 572 175 L568 200 Q555 215 530 218 Q505 215 488 200 Q472 180 475 155 Q478 138 488 130 Z"/>
-                        <path d="M598 165 Q615 160 628 175 Q635 195 625 215 L608 225 Q590 220 580 205 Q575 185 588 170 Q593 166 598 165 Z"/>
-                        <path d="M590 295 Q615 290 635 305 Q650 325 645 350 Q635 375 612 380 Q588 378 575 360 Q565 340 572 318 Q580 302 590 295 Z"/>
-                        <path d="M155 350 Q175 345 200 350 Q230 360 245 380 Q250 400 240 415 L215 420 Q190 418 170 408 Q150 395 148 375 Q149 358 155 350 Z"/>
-                        <path d="M460 350 Q485 345 510 355 Q530 370 528 395 Q518 410 495 412 Q470 408 455 395 Q448 378 452 362 Q456 354 460 350 Z"/>
-                    </g>
-
-                    <path class="country country-france" d="M168 218 Q176 200 200 196 Q220 195 240 200 L255 195 Q272 192 282 205 L290 220 Q294 240 287 258 L278 275 Q268 290 252 297 L230 305 Q210 308 192 302 L175 290 Q162 278 158 258 L160 240 Q163 225 168 218 Z" fill="url(#franceGrad)" stroke="#00e676" stroke-width="2" filter="url(#mapGlow)"/>
-
-                    <path class="country country-italy" d="M328 248 Q340 245 350 252 L358 263 Q364 275 362 290 L358 308 Q353 325 348 340 Q352 355 357 370 Q360 385 362 400 Q358 412 350 412 Q342 408 340 396 L334 380 Q327 365 322 350 L317 332 Q313 315 313 297 L315 278 Q316 262 322 252 Q325 249 328 248 Z" fill="url(#countryGrad)" stroke="#448aff" stroke-width="2" filter="url(#mapGlow)"/>
-
-                    <path class="country country-austria" d="M355 222 Q372 215 395 218 L425 222 Q445 228 452 240 L450 252 Q442 260 425 261 L395 261 Q372 258 358 250 Q350 240 350 232 Q352 225 355 222 Z" fill="url(#countryGrad)" stroke="#448aff" stroke-width="2" filter="url(#mapGlow)"/>
-
-                    <path class="country country-romania" d="M488 218 Q510 212 535 218 L562 225 Q580 235 583 252 L580 270 Q570 282 548 282 L520 280 Q498 276 485 268 Q472 256 474 238 Q480 222 488 218 Z" fill="url(#countryGrad)" stroke="#448aff" stroke-width="2" filter="url(#mapGlow)"/>
-
-                    <g class="travel-arcs" fill="none" stroke-width="2" stroke-linecap="round">
-                        <path d="M533 248 Q480 215 405 240" stroke="#448aff" stroke-dasharray="6 5" opacity="0.8" class="map-arc-anim"/>
-                        <path d="M405 240 Q380 270 343 295" stroke="#448aff" stroke-dasharray="6 5" opacity="0.8" class="map-arc-anim"/>
-                        <path d="M343 295 Q280 230 230 248" stroke="#00e676" stroke-dasharray="6 5" opacity="0.95" stroke-width="2.5" class="map-arc-anim"/>
-                    </g>
-
-                    <g class="map-city">
-                        <circle cx="533" cy="248" r="24" fill="rgba(68,138,255,0.25)" class="pulse-ring"/>
-                        <circle cx="533" cy="248" r="6" fill="#448aff" filter="url(#mapGlow)"/>
-                        <text x="548" y="252" fill="#fff" font-size="13" font-weight="600">Romania</text>
-                        <text x="548" y="266" fill="#7088aa" font-size="9" letter-spacing="0.5">BIRTHPLACE</text>
-                    </g>
-
-                    <g class="map-city">
-                        <circle cx="343" cy="295" r="24" fill="rgba(68,138,255,0.25)" class="pulse-ring"/>
-                        <circle cx="343" cy="295" r="6" fill="#448aff" filter="url(#mapGlow)"/>
-                        <text x="358" y="299" fill="#fff" font-size="13" font-weight="600">Italy</text>
-                        <text x="358" y="313" fill="#7088aa" font-size="9" letter-spacing="0.5">12 YEARS</text>
-                    </g>
-
-                    <g class="map-city">
-                        <circle cx="405" cy="240" r="24" fill="rgba(68,138,255,0.25)" class="pulse-ring"/>
-                        <circle cx="405" cy="240" r="6" fill="#448aff" filter="url(#mapGlow)"/>
-                        <text x="420" y="237" fill="#fff" font-size="13" font-weight="600">Austria</text>
-                        <text x="420" y="251" fill="#7088aa" font-size="9" letter-spacing="0.5">10 YEARS</text>
-                    </g>
-
-                    <g class="map-city">
-                        <circle cx="230" cy="248" r="32" fill="rgba(0,230,118,0.3)" class="pulse-ring-active"/>
-                        <circle cx="230" cy="248" r="20" fill="rgba(0,230,118,0.18)" class="pulse-ring-active" style="animation-delay:0.6s"/>
-                        <circle cx="230" cy="248" r="8" fill="#00e676" filter="url(#mapGlow)"/>
-                        <text x="155" y="232" fill="#00e676" font-size="14" font-weight="700">France &#9733;</text>
-                        <text x="155" y="246" fill="rgba(0,230,118,0.7)" font-size="9" letter-spacing="0.5" font-weight="600">CURRENT</text>
-                    </g>
-                </svg>
+            <div class="globe-wrapper reveal">
+                <div class="globe-container" id="globeContainer">
+                    <canvas id="globeCanvas"></canvas>
+                    <div class="globe-loading" id="globeLoading">Loading globe...</div>
+                </div>
+                <div class="globe-legend">
+                    <div class="globe-legend-item"><span class="globe-dot" style="background:#448aff"></span><span>Romania &middot; Italy &middot; Austria</span></div>
+                    <div class="globe-legend-item"><span class="globe-dot" style="background:#00e676"></span><span>France &mdash; Current</span></div>
+                </div>
             </div>
             <div class="journey-path">
                 <div class="journey-stop reveal" data-expandable>

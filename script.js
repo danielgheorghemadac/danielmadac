@@ -662,16 +662,68 @@
                 ctx.stroke();
             });
 
-            // Draw edges between adjacent nodes (web)
+            // DNA-style sub-branches between related skills
+            // 0=Code 1=Vibe 2=3DPrint 3=Wood/Alu 4=CNC 5=Electro 6=Design 7=Web
+            // 8=Photo 9=Video 10=Platform 11=Proto 12=Craft 13=AI
+            var subBranches = [
+                [0,1],[0,7],[0,10],[0,13],
+                [1,13],[1,7],[1,10],
+                [2,11],[2,4],[2,6],[2,3],[2,5],
+                [3,4],[3,12],[3,11],
+                [4,6],
+                [6,7],
+                [8,9],[8,6],[9,6],
+                [10,7],[10,13],
+                [11,12],
+                [13,7]
+            ];
+            subBranches.forEach(function(pair) {
+                var a = positions[pair[0]];
+                var b = positions[pair[1]];
+                if (!a || !b) return;
+                var depth = (a.z + b.z) / 2;
+                var alpha = 0.05 + Math.max(0, (depth + 1)) * 0.04;
+
+                var mx = (a.sx + b.sx) / 2;
+                var my = (a.sy + b.sy) / 2;
+                var dx = b.sx - a.sx;
+                var dy = b.sy - a.sy;
+                var len = Math.hypot(dx, dy) || 1;
+                var bend = 18 * Math.sin(t * 0.0008 + pair[0] + pair[1]);
+                var nx = -dy / len * bend;
+                var ny = dx / len * bend;
+                var ctrlX = mx + nx;
+                var ctrlY = my + ny;
+
+                ctx.beginPath();
+                ctx.moveTo(a.sx, a.sy);
+                ctx.quadraticCurveTo(ctrlX, ctrlY, b.sx, b.sy);
+                ctx.strokeStyle = 'rgba(0,230,118,' + alpha + ')';
+                ctx.lineWidth = 0.7;
+                ctx.stroke();
+
+                // Base-pair dots along the curve (DNA bases)
+                for (var d = 0.18; d < 0.86; d += 0.18) {
+                    var u = d;
+                    var bx = (1 - u) * (1 - u) * a.sx + 2 * (1 - u) * u * ctrlX + u * u * b.sx;
+                    var by = (1 - u) * (1 - u) * a.sy + 2 * (1 - u) * u * ctrlY + u * u * b.sy;
+                    ctx.beginPath();
+                    ctx.arc(bx, by, 0.9, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,' + (alpha * 4) + ')';
+                    ctx.fill();
+                }
+            });
+
+            // Adjacent web ring (kept subtle)
             for (var i = 0; i < positions.length; i++) {
                 var a = positions[i];
                 var b = positions[(i + 1) % positions.length];
-                var alpha = Math.max(0.03, 0.1 + Math.min(a.z, b.z) * 0.1);
+                var alpha = Math.max(0.02, 0.06 + Math.min(a.z, b.z) * 0.06);
                 ctx.beginPath();
                 ctx.moveTo(a.sx, a.sy);
                 ctx.lineTo(b.sx, b.sy);
                 ctx.strokeStyle = 'rgba(0,230,118,' + alpha + ')';
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 0.6;
                 ctx.stroke();
             }
 
@@ -895,6 +947,58 @@
             });
             legendContainer.appendChild(item);
         });
+
+        // Live stats panel: max, min, average — animated bar
+        (function buildStats() {
+            var statsEl = document.getElementById('skillStats');
+            if (!statsEl) return;
+
+            var values = skills.map(function(s) { return s.value; });
+            var maxV = Math.max.apply(null, values);
+            var minV = Math.min.apply(null, values);
+            var avgV = Math.round(values.reduce(function(a, b) { return a + b; }, 0) / values.length);
+            var maxSkill = skills[values.indexOf(maxV)];
+            var minSkill = skills[values.indexOf(minV)];
+
+            statsEl.innerHTML =
+                '<div class="skill-stat top">' +
+                    '<span class="skill-stat-label">&#9650; Top</span>' +
+                    '<span class="skill-stat-name">' + maxSkill.label + '</span>' +
+                    '<span class="skill-stat-value max">' + maxV + '%</span>' +
+                '</div>' +
+                '<div class="skill-stat avg">' +
+                    '<span class="skill-stat-label">&middot; Average</span>' +
+                    '<span class="skill-stat-name">All Skills</span>' +
+                    '<span class="skill-stat-value">' + avgV + '%</span>' +
+                '</div>' +
+                '<div class="skill-stat low">' +
+                    '<span class="skill-stat-label">&#9651; Growing</span>' +
+                    '<span class="skill-stat-name">' + minSkill.label + '</span>' +
+                    '<span class="skill-stat-value min">' + minV + '%</span>' +
+                '</div>' +
+                '<div class="skill-stats-bar">' +
+                    '<div class="skill-stats-bar-track">' +
+                        '<div class="skill-stats-bar-fill" style="left:' + minV + '%; right:' + (100 - maxV) + '%;"></div>' +
+                        '<div class="skill-stats-bar-marker" style="left:' + avgV + '%;" title="Average ' + avgV + '%"></div>' +
+                    '</div>' +
+                    '<div class="skill-stats-bar-scale"><span>0</span><span>50</span><span>100</span></div>' +
+                '</div>';
+
+            // Live tickers (animate values from 0 to target)
+            statsEl.querySelectorAll('.skill-stat-value').forEach(function(el) {
+                var target = parseInt(el.textContent, 10);
+                el.textContent = '0%';
+                var start = performance.now();
+                var dur = 1200;
+                function step(now) {
+                    var p = Math.min((now - start) / dur, 1);
+                    p = 1 - Math.pow(1 - p, 3);
+                    el.textContent = Math.round(target * p) + '%';
+                    if (p < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            });
+        })();
 
         // Resize
         window.addEventListener('resize', function() { size = setupCanvas(); });

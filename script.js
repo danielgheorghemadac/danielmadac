@@ -867,31 +867,39 @@
             var textureLoader = new THREE.TextureLoader();
             textureLoader.crossOrigin = 'anonymous';
 
-            var earthMap = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-            var earthBump = textureLoader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
-            var earthSpec = textureLoader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
+            var maxAniso = renderer.capabilities.getMaxAnisotropy();
+            function loadTex(url) {
+                var t = textureLoader.load(url);
+                t.anisotropy = maxAniso;
+                t.minFilter = THREE.LinearMipmapLinearFilter;
+                return t;
+            }
+
+            var earthMap = loadTex('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+            var earthBump = loadTex('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+            var earthSpec = loadTex('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
 
             var globe = new THREE.Mesh(
-                new THREE.SphereGeometry(1, 64, 64),
+                new THREE.SphereGeometry(1, 128, 128),
                 new THREE.MeshPhongMaterial({
                     map: earthMap,
                     bumpMap: earthBump,
-                    bumpScale: 0.04,
+                    bumpScale: 0.05,
                     specularMap: earthSpec,
-                    specular: new THREE.Color(0x333333),
-                    shininess: 28
+                    specular: new THREE.Color(0x444466),
+                    shininess: 32
                 })
             );
             scene.add(globe);
 
-            // Cloud layer
-            var cloudsTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_clouds_1024.png');
+            // Cloud layer (higher res + double-rotated for parallax)
+            var cloudsTexture = loadTex('https://threejs.org/examples/textures/planets/earth_clouds_2048.png');
             var clouds = new THREE.Mesh(
-                new THREE.SphereGeometry(1.015, 64, 64),
+                new THREE.SphereGeometry(1.018, 128, 128),
                 new THREE.MeshPhongMaterial({
                     map: cloudsTexture,
                     transparent: true,
-                    opacity: 0.35,
+                    opacity: 0.4,
                     depthWrite: false
                 })
             );
@@ -944,10 +952,11 @@
             cities.forEach(function(c) {
                 var pos = latLonToVec3(c.lat, c.lon, 1.005);
                 var pin = new THREE.Mesh(
-                    new THREE.SphereGeometry(c.size, 16, 16),
+                    new THREE.SphereGeometry(c.size * 1.5, 16, 16),
                     new THREE.MeshBasicMaterial({ color: c.color })
                 );
                 pin.position.copy(pos);
+                pin.userData.cityIndex = cityMeshes.length;
                 globe.add(pin);
 
                 var glow = new THREE.Mesh(
@@ -956,7 +965,7 @@
                 );
                 glow.position.copy(pos);
                 globe.add(glow);
-                cityMeshes.push({ glow: glow, base: c.size * 2.5, isFrance: c.name === 'France' });
+                cityMeshes.push({ pin: pin, glow: glow, base: c.size * 2.5, isFrance: c.name === 'France' });
             });
 
             // Travel arcs in order
@@ -1014,14 +1023,17 @@
             globe.rotation.x = -0.45;
             wire.rotation.copy(globe.rotation);
 
-            // Drag controls
+            // Drag, zoom, click controls
             var isDragging = false;
+            var dragDistance = 0;
             var lastX = 0, lastY = 0;
             var autoRotate = true;
             var lastInteraction = Date.now();
+            var pinchDist = 0;
 
             function onStart(x, y) {
                 isDragging = true;
+                dragDistance = 0;
                 lastX = x; lastY = y;
                 autoRotate = false;
                 lastInteraction = Date.now();
@@ -1030,29 +1042,87 @@
                 if (!isDragging) return;
                 var dx = x - lastX;
                 var dy = y - lastY;
+                dragDistance += Math.abs(dx) + Math.abs(dy);
                 globe.rotation.y += dx * 0.005;
                 globe.rotation.x += dy * 0.005;
-                globe.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, globe.rotation.x));
                 wire.rotation.copy(globe.rotation);
                 lastX = x; lastY = y;
                 lastInteraction = Date.now();
             }
             function onEnd() { isDragging = false; }
 
+            function zoom(delta) {
+                camera.position.z = Math.max(1.4, Math.min(8, camera.position.z + delta));
+                lastInteraction = Date.now();
+            }
+
+            // Raycaster for tapping city pins
+            var raycaster = new THREE.Raycaster();
+            var mouseVec = new THREE.Vector2();
+            var pinMeshes = cityMeshes.map(function(cm) { return cm.pin; });
+
+            function handleTap(clientX, clientY) {
+                if (dragDistance > 8) return; // it was a drag, not a tap
+                var rect = canvas.getBoundingClientRect();
+                mouseVec.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                mouseVec.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+                raycaster.setFromCamera(mouseVec, camera);
+                var hits = raycaster.intersectObjects(pinMeshes, false);
+                if (hits.length === 0) return;
+                var idx = hits[0].object.userData.cityIndex;
+                var stops = document.querySelectorAll('.journey-stop[data-expandable]');
+                var stop = stops[idx];
+                if (!stop) return;
+                document.querySelectorAll('.journey-stop.expanded').forEach(function(s) { s.classList.remove('expanded'); });
+                stop.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(function() { stop.classList.add('expanded'); }, 500);
+            }
+
             canvas.addEventListener('mousedown', function(e) { onStart(e.clientX, e.clientY); });
             window.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
-            window.addEventListener('mouseup', onEnd);
+            window.addEventListener('mouseup', function(e) {
+                if (isDragging) handleTap(e.clientX, e.clientY);
+                onEnd();
+            });
+
             canvas.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                var t = e.touches[0];
-                onStart(t.clientX, t.clientY);
+                if (e.touches.length === 2) {
+                    var t1 = e.touches[0], t2 = e.touches[1];
+                    pinchDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+                    isDragging = false;
+                } else {
+                    var t = e.touches[0];
+                    onStart(t.clientX, t.clientY);
+                }
             }, { passive: false });
+
             canvas.addEventListener('touchmove', function(e) {
                 e.preventDefault();
-                var t = e.touches[0];
-                onMove(t.clientX, t.clientY);
+                if (e.touches.length === 2) {
+                    var t1 = e.touches[0], t2 = e.touches[1];
+                    var d = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+                    if (pinchDist > 0) zoom((pinchDist - d) * 0.01);
+                    pinchDist = d;
+                } else {
+                    var t = e.touches[0];
+                    onMove(t.clientX, t.clientY);
+                }
             }, { passive: false });
-            canvas.addEventListener('touchend', onEnd);
+
+            canvas.addEventListener('touchend', function(e) {
+                if (e.changedTouches.length && e.touches.length === 0 && isDragging) {
+                    var t = e.changedTouches[0];
+                    handleTap(t.clientX, t.clientY);
+                }
+                pinchDist = 0;
+                onEnd();
+            });
+
+            canvas.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                zoom(e.deltaY * 0.002);
+            }, { passive: false });
 
             // Animation loop
             function animate(t) {

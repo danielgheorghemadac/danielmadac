@@ -531,13 +531,13 @@
         lerpGlow();
     })();
 
-    // ============ INTERACTIVE SKILLS RADAR CHART ============
-    (function initRadarChart() {
-        var radarCanvas = document.getElementById('radarChart');
+    // ============ 3D SKILLS NEURAL NETWORK ============
+    (function initSkillsNetwork() {
+        var canvas = document.getElementById('radarChart');
         var legendContainer = document.getElementById('radarLegend');
-        if (!radarCanvas || !legendContainer) return;
+        if (!canvas || !legendContainer) return;
 
-        var rCtx = radarCanvas.getContext('2d');
+        var ctx = canvas.getContext('2d');
 
         var skills = [
             { label: 'Fabrication', shortLabel: 'Fab', value: 92, color: '#448aff' },
@@ -550,265 +550,316 @@
             { label: 'Cross-Platform', shortLabel: 'Platform', value: 90, color: '#66ffaa' }
         ];
 
-        var numSkills = skills.length;
-        var angleStep = (Math.PI * 2) / numSkills;
-        var animProgress = 0;
-        var animating = false;
+        var n = skills.length;
         var hoveredIndex = -1;
-        var hasAnimated = false;
+        var rotation = 0;
+        var manualRotX = 0.3, manualRotY = 0;
+        var lastX = 0, lastY = 0;
+        var isDragging = false;
+        var lastInteraction = 0;
+        var packets = [];
 
-        // Handle high-DPI displays
+        // High-DPI canvas
         function setupCanvas() {
-            var wrapper = radarCanvas.parentElement;
+            var wrapper = canvas.parentElement;
             var isMobile = window.innerWidth < 768;
-            var displaySize = isMobile ? Math.min(wrapper.offsetWidth * 0.85, 350) : Math.min(wrapper.offsetWidth * 0.55, 500);
+            var displaySize = isMobile ? Math.min(wrapper.offsetWidth * 0.92, 380) : Math.min(wrapper.offsetWidth * 0.55, 480);
             var dpr = window.devicePixelRatio || 1;
-            radarCanvas.style.width = displaySize + 'px';
-            radarCanvas.style.height = displaySize + 'px';
-            radarCanvas.width = displaySize * dpr;
-            radarCanvas.height = displaySize * dpr;
-            rCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            canvas.style.width = displaySize + 'px';
+            canvas.style.height = displaySize + 'px';
+            canvas.width = displaySize * dpr;
+            canvas.height = displaySize * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             return displaySize;
         }
+        var size = setupCanvas();
 
-        var displaySize = setupCanvas();
+        // Build 3D positions of nodes around a sphere (latitudes for variety)
+        var nodes = skills.map(function(s, i) {
+            var phi = (i / n) * Math.PI * 2;
+            // Alternate latitudes for a 3D feel (not all on equator)
+            var lat = ((i % 2) ? 0.3 : -0.3);
+            return {
+                phi: phi,
+                lat: lat,
+                value: s.value,
+                color: s.color,
+                label: s.label,
+                shortLabel: s.shortLabel,
+                pulse: Math.random() * Math.PI * 2,
+                index: i
+            };
+        });
 
-        function getCenterAndRadius() {
-            var cSize = parseFloat(radarCanvas.style.width);
-            var isMobile = window.innerWidth < 768;
-            return { cx: cSize / 2, cy: cSize / 2, maxR: cSize * (isMobile ? 0.24 : 0.28) };
+        // Spawn data packets traveling along edges
+        function spawnPacket() {
+            var idx = Math.floor(Math.random() * n);
+            packets.push({
+                target: idx,
+                t: 0,
+                dir: Math.random() < 0.5 ? 1 : -1,
+                speed: 0.012 + Math.random() * 0.012
+            });
+            if (packets.length > 20) packets.shift();
         }
 
-        function drawRadar(progress) {
-            var dims = getCenterAndRadius();
-            var cx = dims.cx, cy = dims.cy, maxR = dims.maxR;
-            var cSize = parseFloat(radarCanvas.style.width);
-
-            rCtx.clearRect(0, 0, cSize, cSize);
-
-            // Draw grid rings (5 levels)
-            for (var ring = 1; ring <= 5; ring++) {
-                var r = (maxR / 5) * ring;
-                rCtx.beginPath();
-                for (var i = 0; i <= numSkills; i++) {
-                    var angle = (angleStep * i) - Math.PI / 2;
-                    var x = cx + r * Math.cos(angle);
-                    var y = cy + r * Math.sin(angle);
-                    if (i === 0) rCtx.moveTo(x, y);
-                    else rCtx.lineTo(x, y);
-                }
-                rCtx.closePath();
-                rCtx.strokeStyle = 'rgba(68, 138, 255, ' + (0.08 + ring * 0.03) + ')';
-                rCtx.lineWidth = 1;
-                rCtx.stroke();
-            }
-
-            // Draw axis lines
-            for (var i = 0; i < numSkills; i++) {
-                var angle = (angleStep * i) - Math.PI / 2;
-                rCtx.beginPath();
-                rCtx.moveTo(cx, cy);
-                rCtx.lineTo(cx + maxR * Math.cos(angle), cy + maxR * Math.sin(angle));
-                rCtx.strokeStyle = 'rgba(68, 138, 255, 0.12)';
-                rCtx.lineWidth = 1;
-                rCtx.stroke();
-            }
-
-            // Draw filled data area with animation
-            var currentProgress = Math.min(progress, 1);
-            rCtx.beginPath();
-            for (var i = 0; i <= numSkills; i++) {
-                var idx = i % numSkills;
-                var angle = (angleStep * idx) - Math.PI / 2;
-                var value = (skills[idx].value / 100) * maxR * currentProgress;
-                var x = cx + value * Math.cos(angle);
-                var y = cy + value * Math.sin(angle);
-                if (i === 0) rCtx.moveTo(x, y);
-                else rCtx.lineTo(x, y);
-            }
-            rCtx.closePath();
-
-            // Gradient fill
-            var gradient = rCtx.createLinearGradient(cx - maxR, cy - maxR, cx + maxR, cy + maxR);
-            gradient.addColorStop(0, 'rgba(68, 138, 255, 0.25)');
-            gradient.addColorStop(0.5, 'rgba(0, 230, 118, 0.18)');
-            gradient.addColorStop(1, 'rgba(68, 138, 255, 0.2)');
-            rCtx.fillStyle = gradient;
-            rCtx.fill();
-
-            // Stroke around data area
-            rCtx.strokeStyle = 'rgba(68, 138, 255, 0.7)';
-            rCtx.lineWidth = 2;
-            rCtx.stroke();
-
-            // Draw vertex dots and labels
-            for (var i = 0; i < numSkills; i++) {
-                var angle = (angleStep * i) - Math.PI / 2;
-                var value = (skills[i].value / 100) * maxR * currentProgress;
-                var x = cx + value * Math.cos(angle);
-                var y = cy + value * Math.sin(angle);
-
-                // Vertex dot
-                var dotSize = (hoveredIndex === i) ? 7 : 4;
-                rCtx.beginPath();
-                rCtx.arc(x, y, dotSize, 0, Math.PI * 2);
-                rCtx.fillStyle = (hoveredIndex === i) ? '#fff' : skills[i].color;
-                rCtx.fill();
-
-                if (hoveredIndex === i) {
-                    rCtx.beginPath();
-                    rCtx.arc(x, y, 12, 0, Math.PI * 2);
-                    rCtx.strokeStyle = skills[i].color;
-                    rCtx.lineWidth = 2;
-                    rCtx.stroke();
-                }
-
-                // Labels around the outside
-                var labelR = maxR + 24;
-                var lx = cx + labelR * Math.cos(angle);
-                var ly = cy + labelR * Math.sin(angle);
-
-                rCtx.save();
-                rCtx.font = (hoveredIndex === i) ? '600 13px Poppins, sans-serif' : '500 11px Poppins, sans-serif';
-                rCtx.fillStyle = (hoveredIndex === i) ? '#fff' : 'rgba(255,255,255,0.65)';
-                rCtx.textAlign = 'center';
-                rCtx.textBaseline = 'middle';
-
-                // Adjust label position to avoid overlap with chart
-                if (Math.abs(angle + Math.PI / 2) < 0.1) {
-                    rCtx.textBaseline = 'bottom';
-                    ly -= 6;
-                } else if (Math.abs(angle - Math.PI / 2) < 0.1) {
-                    rCtx.textBaseline = 'top';
-                    ly += 6;
-                }
-                if (Math.cos(angle) > 0.3) rCtx.textAlign = 'left';
-                else if (Math.cos(angle) < -0.3) rCtx.textAlign = 'right';
-
-                var displayLabel = (window.innerWidth < 768) ? skills[i].shortLabel : skills[i].label;
-                rCtx.fillText(displayLabel, lx, ly);
-
-                // Show value on hover
-                if (hoveredIndex === i) {
-                    rCtx.font = '700 14px Poppins, sans-serif';
-                    rCtx.fillStyle = skills[i].color;
-                    rCtx.fillText(skills[i].value + '%', lx, ly + 16);
-                }
-
-                rCtx.restore();
-            }
+        function project(x, y, z) {
+            // Apply rotation
+            var cosY = Math.cos(rotation + manualRotY);
+            var sinY = Math.sin(rotation + manualRotY);
+            var cosX = Math.cos(manualRotX);
+            var sinX = Math.sin(manualRotX);
+            var x1 = x * cosY - z * sinY;
+            var z1 = x * sinY + z * cosY;
+            var y1 = y * cosX - z1 * sinX;
+            var z2 = y * sinX + z1 * cosX;
+            // Perspective
+            var scale = 1.6 / (1.6 - z2);
+            return { x: x1 * scale, y: y1 * scale, z: z2, scale: scale };
         }
 
-        // Build legend
-        skills.forEach(function (skill, idx) {
+        function draw(t) {
+            var w = parseFloat(canvas.style.width);
+            var h = parseFloat(canvas.style.height);
+            var cx = w / 2, cy = h / 2;
+            var R = Math.min(w, h) * 0.32;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Compute 3D positions
+            var positions = nodes.map(function(node) {
+                var r = (node.value / 100) * 1.0;
+                var x = Math.cos(node.phi) * Math.cos(node.lat) * r;
+                var y = Math.sin(node.lat) * r;
+                var z = Math.sin(node.phi) * Math.cos(node.lat) * r;
+                var p = project(x, y, z);
+                return {
+                    sx: cx + p.x * R,
+                    sy: cy + p.y * R,
+                    z: p.z,
+                    scale: p.scale,
+                    node: node
+                };
+            });
+
+            // Sort by depth (back to front)
+            var sorted = positions.slice().sort(function(a, b) { return a.z - b.z; });
+
+            // Draw edges from hub to each node (background)
+            sorted.forEach(function(p) {
+                var alpha = Math.max(0.05, 0.15 + p.z * 0.15);
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(p.sx, p.sy);
+                ctx.strokeStyle = 'rgba(68,138,255,' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // Draw edges between adjacent nodes (web)
+            for (var i = 0; i < positions.length; i++) {
+                var a = positions[i];
+                var b = positions[(i + 1) % positions.length];
+                var alpha = Math.max(0.03, 0.1 + Math.min(a.z, b.z) * 0.1);
+                ctx.beginPath();
+                ctx.moveTo(a.sx, a.sy);
+                ctx.lineTo(b.sx, b.sy);
+                ctx.strokeStyle = 'rgba(0,230,118,' + alpha + ')';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            // Central hub (Daniel)
+            var hubR = 14 + Math.sin(t * 0.003) * 2;
+            var grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, hubR * 2.5);
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.3, '#00e676');
+            grad.addColorStop(1, 'rgba(0,230,118,0)');
+            ctx.beginPath();
+            ctx.arc(cx, cy, hubR * 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(cx, cy, hubR * 0.45, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.font = '700 9px Poppins, sans-serif';
+            ctx.fillStyle = '#07070d';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('DM', cx, cy);
+
+            // Data packets flying along the edges
+            ctx.save();
+            packets.forEach(function(pkt) {
+                pkt.t += pkt.speed;
+                if (pkt.t >= 1) { pkt.t = 0; pkt.target = Math.floor(Math.random() * n); pkt.dir = Math.random() < 0.5 ? 1 : -1; }
+                var pos = positions[pkt.target];
+                var t01 = pkt.dir > 0 ? pkt.t : (1 - pkt.t);
+                var px = cx + (pos.sx - cx) * t01;
+                var py = cy + (pos.sy - cy) * t01;
+                ctx.beginPath();
+                ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+                ctx.fillStyle = pos.node.color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = pos.node.color;
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+            ctx.restore();
+
+            // Draw nodes (front to back order matters for occlusion)
+            sorted.forEach(function(p) {
+                var size = (5 + (p.node.value / 100) * 7) * p.scale;
+                var isHover = hoveredIndex === p.node.index;
+                if (isHover) size *= 1.4;
+
+                // Glow
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, size * 2.2, 0, Math.PI * 2);
+                ctx.fillStyle = p.node.color;
+                ctx.globalAlpha = 0.18 + (p.z + 1) * 0.08;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                // Body
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, size, 0, Math.PI * 2);
+                var nodeGrad = ctx.createRadialGradient(p.sx - size * 0.3, p.sy - size * 0.3, 0, p.sx, p.sy, size);
+                nodeGrad.addColorStop(0, '#ffffff');
+                nodeGrad.addColorStop(0.4, p.node.color);
+                nodeGrad.addColorStop(1, p.node.color);
+                ctx.fillStyle = nodeGrad;
+                ctx.fill();
+
+                // Outline ring on hover
+                if (isHover) {
+                    ctx.beginPath();
+                    ctx.arc(p.sx, p.sy, size + 5, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+
+                // Label
+                var labelDist = size + 14;
+                var labelOffsetX = 0, labelOffsetY = 0;
+                if (Math.abs(p.sx - cx) > Math.abs(p.sy - cy)) {
+                    labelOffsetX = (p.sx > cx) ? labelDist : -labelDist;
+                    ctx.textAlign = p.sx > cx ? 'left' : 'right';
+                    ctx.textBaseline = 'middle';
+                } else {
+                    labelOffsetY = (p.sy > cy) ? labelDist : -labelDist;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = p.sy > cy ? 'top' : 'bottom';
+                }
+                ctx.font = (isHover ? '600 12px ' : '500 ' + (window.innerWidth < 768 ? '10' : '11') + 'px ') + 'Poppins, sans-serif';
+                ctx.fillStyle = isHover ? '#ffffff' : 'rgba(255,255,255,' + (0.5 + p.z * 0.35) + ')';
+                var lbl = (window.innerWidth < 768) ? p.node.shortLabel : p.node.label;
+                ctx.fillText(lbl, p.sx + labelOffsetX, p.sy + labelOffsetY);
+                if (isHover) {
+                    ctx.font = '700 13px Poppins, sans-serif';
+                    ctx.fillStyle = p.node.color;
+                    ctx.fillText(p.node.value + '%', p.sx + labelOffsetX, p.sy + labelOffsetY + (labelOffsetY !== 0 ? (labelOffsetY > 0 ? 14 : -14) : 14));
+                }
+            });
+        }
+
+        function loop(t) {
+            // Auto-rotate when no manual interaction recently
+            if (!isDragging && Date.now() - lastInteraction > 1500) {
+                rotation += 0.005;
+            }
+            // Spawn packets every ~200ms
+            if (Math.random() < 0.06) spawnPacket();
+            draw(t);
+            requestAnimationFrame(loop);
+        }
+
+        // Touch/mouse drag to rotate
+        function onStart(x, y) {
+            isDragging = true;
+            lastX = x; lastY = y;
+            lastInteraction = Date.now();
+        }
+        function onMove(x, y) {
+            if (!isDragging) return;
+            var dx = x - lastX, dy = y - lastY;
+            manualRotY += dx * 0.01;
+            manualRotX += dy * 0.01;
+            manualRotX = Math.max(-1.2, Math.min(1.2, manualRotX));
+            lastX = x; lastY = y;
+            lastInteraction = Date.now();
+        }
+        function onEnd() { isDragging = false; lastInteraction = Date.now(); }
+
+        canvas.addEventListener('mousedown', function(e) { onStart(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
+        window.addEventListener('mouseup', onEnd);
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            var t = e.touches[0];
+            onStart(t.clientX, t.clientY);
+        }, { passive: false });
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            var t = e.touches[0];
+            onMove(t.clientX, t.clientY);
+        }, { passive: false });
+        canvas.addEventListener('touchend', onEnd);
+
+        // Hover detection
+        canvas.addEventListener('mousemove', function(e) {
+            var rect = canvas.getBoundingClientRect();
+            var mx = e.clientX - rect.left;
+            var my = e.clientY - rect.top;
+            var w = parseFloat(canvas.style.width);
+            var h = parseFloat(canvas.style.height);
+            var cx = w / 2, cy = h / 2;
+            var R = Math.min(w, h) * 0.32;
+            var found = -1;
+            nodes.forEach(function(node, i) {
+                var r = (node.value / 100) * 1.0;
+                var x = Math.cos(node.phi) * Math.cos(node.lat) * r;
+                var y = Math.sin(node.lat) * r;
+                var z = Math.sin(node.phi) * Math.cos(node.lat) * r;
+                var p = project(x, y, z);
+                var sx = cx + p.x * R;
+                var sy = cy + p.y * R;
+                if (Math.hypot(mx - sx, my - sy) < 20) found = i;
+            });
+            if (found !== hoveredIndex) {
+                hoveredIndex = found;
+                legendContainer.querySelectorAll('.radar-legend-item').forEach(function(li, i) {
+                    li.classList.toggle('active', i === found);
+                });
+            }
+        });
+
+        // Legend
+        skills.forEach(function(skill, idx) {
             var item = document.createElement('div');
             item.className = 'radar-legend-item';
             item.innerHTML = '<span class="radar-legend-dot" style="background:' + skill.color + '"></span>' +
                 '<span class="radar-legend-name">' + skill.label + '</span>' +
                 '<span class="radar-legend-val">' + skill.value + '%</span>';
-
-            item.addEventListener('mouseenter', function () {
+            item.addEventListener('mouseenter', function() {
                 hoveredIndex = idx;
-                drawRadar(animProgress);
                 item.classList.add('active');
             });
-            item.addEventListener('mouseleave', function () {
+            item.addEventListener('mouseleave', function() {
                 hoveredIndex = -1;
-                drawRadar(animProgress);
                 item.classList.remove('active');
             });
-
             legendContainer.appendChild(item);
         });
 
-        // Detect hover on canvas vertices
-        radarCanvas.addEventListener('mousemove', function (e) {
-            var rect = radarCanvas.getBoundingClientRect();
-            var scaleX = parseFloat(radarCanvas.style.width) / rect.width;
-            var scaleY = parseFloat(radarCanvas.style.height) / rect.height;
-            var mx = (e.clientX - rect.left) * scaleX;
-            var my = (e.clientY - rect.top) * scaleY;
+        // Resize
+        window.addEventListener('resize', function() { size = setupCanvas(); });
 
-            var dims = getCenterAndRadius();
-            var cx = dims.cx, cy = dims.cy, maxR = dims.maxR;
-            var found = -1;
-
-            for (var i = 0; i < numSkills; i++) {
-                var angle = (angleStep * i) - Math.PI / 2;
-                var value = (skills[i].value / 100) * maxR * animProgress;
-                var x = cx + value * Math.cos(angle);
-                var y = cy + value * Math.sin(angle);
-                var dist = Math.sqrt((mx - x) * (mx - x) + (my - y) * (my - y));
-                if (dist < 18) { found = i; break; }
-            }
-
-            if (found !== hoveredIndex) {
-                hoveredIndex = found;
-                drawRadar(animProgress);
-                // Sync legend highlight
-                var legendItems = legendContainer.querySelectorAll('.radar-legend-item');
-                legendItems.forEach(function (li, idx) {
-                    li.classList.toggle('active', idx === found);
-                });
-            }
-        });
-
-        radarCanvas.addEventListener('mouseleave', function () {
-            hoveredIndex = -1;
-            drawRadar(animProgress);
-            legendContainer.querySelectorAll('.radar-legend-item').forEach(function (li) {
-                li.classList.remove('active');
-            });
-        });
-
-        // Animate on scroll
-        function startAnimation() {
-            if (animating || hasAnimated) return;
-            animating = true;
-            hasAnimated = true;
-            var startTime = performance.now();
-            var duration = 1200;
-
-            function step(now) {
-                var elapsed = now - startTime;
-                animProgress = Math.min(elapsed / duration, 1);
-                // Ease out cubic
-                animProgress = 1 - Math.pow(1 - animProgress, 3);
-                drawRadar(animProgress);
-                if (elapsed < duration) {
-                    requestAnimationFrame(step);
-                } else {
-                    animProgress = 1;
-                    animating = false;
-                    drawRadar(1);
-                }
-            }
-
-            requestAnimationFrame(step);
-        }
-
-        // Observe the radar wrapper
-        var radarWrapper = radarCanvas.closest('.radar-wrapper');
-        if (radarWrapper) {
-            var radarObserver = new IntersectionObserver(function (entries) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        startAnimation();
-                        radarObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.3 });
-            radarObserver.observe(radarWrapper);
-        }
-
-        // Initial static draw
-        drawRadar(0);
-
-        // Resize handler
-        window.addEventListener('resize', function () {
-            displaySize = setupCanvas();
-            drawRadar(animProgress);
-        });
+        // Kick off
+        for (var i = 0; i < 8; i++) spawnPacket();
+        requestAnimationFrame(loop);
     })();
 
     // ============ EXPANDABLE JOURNEY STOPS ============

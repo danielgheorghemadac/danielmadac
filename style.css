@@ -1043,6 +1043,24 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     transform: translateY(0);
 }
 
+/* ============ GYROSCOPE TILT ============ */
+.gyro-active .skill-card,
+.gyro-active .project-card,
+.gyro-active .lang-card,
+.gyro-active .contact-card,
+.gyro-active .timeline-content,
+.gyro-active .vivatech-card,
+.gyro-active .badge-content {
+    transform: perspective(900px) rotateX(var(--gyro-rx, 0deg)) rotateY(var(--gyro-ry, 0deg));
+    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.gyro-active .skill-card.flipped,
+.gyro-active .project-card.flipped {
+    transform: none;
+}
+
 /* ============ FLIP CARDS ============ */
 .skill-card,
 .project-card {

@@ -375,7 +375,8 @@
 
         function resetTilt(card) {
             card.style.transition = 'transform 0.45s cubic-bezier(0.23, 1, 0.32, 1)';
-            card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            card.style.transform = '';
+            setTimeout(function() { card._touching = false; }, 500);
         }
 
         cards.forEach(function (card) {
@@ -384,6 +385,7 @@
             var isTilting = false;
 
             card.addEventListener('mousemove', function (e) {
+                card._touching = true;
                 applyTilt(card, e.clientX, e.clientY);
             });
             card.addEventListener('mouseleave', function () {
@@ -392,6 +394,7 @@
 
             card.addEventListener('touchstart', function (e) {
                 isTilting = true;
+                card._touching = true;
                 var t = e.touches[0];
                 applyTilt(card, t.clientX, t.clientY);
             }, { passive: true });
@@ -407,6 +410,87 @@
                 resetTilt(card);
             });
         });
+    })();
+
+    // ============ GYROSCOPE TILT (iOS, Android, anywhere with DeviceOrientation) ============
+    (function initGyroTilt() {
+        if (typeof DeviceOrientationEvent === 'undefined') return;
+
+        var gyroCards = document.querySelectorAll('.skill-card, .project-card, .lang-card, .contact-card, .timeline-content, .vivatech-card, .journey-stop, .lang-card, .badge-content');
+        if (!gyroCards.length) return;
+
+        var enabled = false;
+        var currentBeta = 0, currentGamma = 0;
+        var targetBeta = 0, targetGamma = 0;
+        var calibrated = false;
+        var baseBeta = 30, baseGamma = 0;
+        var MAX_TILT = 7;
+        var SMOOTH = 0.12;
+        var loopRunning = false;
+
+        function loop() {
+            currentBeta += (targetBeta - currentBeta) * SMOOTH;
+            currentGamma += (targetGamma - currentGamma) * SMOOTH;
+
+            var rx = Math.max(-MAX_TILT, Math.min(MAX_TILT, -currentBeta * 0.35));
+            var ry = Math.max(-MAX_TILT, Math.min(MAX_TILT, currentGamma * 0.25));
+
+            for (var i = 0; i < gyroCards.length; i++) {
+                var card = gyroCards[i];
+                if (card._touching) continue;
+                if (card.classList.contains('flipped')) continue;
+                card.style.setProperty('--gyro-rx', rx.toFixed(2) + 'deg');
+                card.style.setProperty('--gyro-ry', ry.toFixed(2) + 'deg');
+            }
+
+            if (enabled) requestAnimationFrame(loop);
+            else loopRunning = false;
+        }
+
+        function handleOrientation(e) {
+            if (e.beta == null || e.gamma == null) return;
+            if (!calibrated) {
+                baseBeta = e.beta;
+                baseGamma = e.gamma;
+                calibrated = true;
+            }
+            targetBeta = Math.max(-25, Math.min(25, e.beta - baseBeta));
+            targetGamma = Math.max(-25, Math.min(25, e.gamma - baseGamma));
+        }
+
+        function start() {
+            if (enabled) return;
+            enabled = true;
+            document.documentElement.classList.add('gyro-active');
+            window.addEventListener('deviceorientation', handleOrientation, true);
+            if (!loopRunning) {
+                loopRunning = true;
+                requestAnimationFrame(loop);
+            }
+        }
+
+        function attemptStart() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(function(state) {
+                    if (state === 'granted') start();
+                }).catch(function() {});
+            } else {
+                start();
+            }
+        }
+
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            var triggered = false;
+            function gestureStart() {
+                if (triggered) return;
+                triggered = true;
+                attemptStart();
+            }
+            document.addEventListener('click', gestureStart, { once: true, capture: true });
+            document.addEventListener('touchstart', gestureStart, { once: true, capture: true, passive: true });
+        } else {
+            start();
+        }
     })();
 
     // ============ CURSOR GLOW ============

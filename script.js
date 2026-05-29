@@ -9,9 +9,11 @@
     let animId;
 
     function resizeCanvas() {
-        canvas.width = canvas.offsetWidth * devicePixelRatio;
-        canvas.height = canvas.offsetHeight * devicePixelRatio;
-        ctx.scale(devicePixelRatio, devicePixelRatio);
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = canvas.offsetWidth * dpr;
+        canvas.height = canvas.offsetHeight * dpr;
+        // setTransform resets any previous scale to avoid compounding on resize
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     class Particle {
@@ -59,7 +61,10 @@
     }
 
     function initParticles() {
-        const count = Math.min(Math.floor((canvas.offsetWidth * canvas.offsetHeight) / 8000), 120);
+        var isMobile = window.innerWidth < 768;
+        var density = isMobile ? 16000 : 8000;
+        var cap = isMobile ? 50 : 120;
+        const count = Math.min(Math.floor((canvas.offsetWidth * canvas.offsetHeight) / density), cap);
         particles = [];
         for (let i = 0; i < count; i++) {
             particles.push(new Particle());
@@ -92,18 +97,22 @@
         animId = requestAnimationFrame(animateParticles);
     }
 
+    var particleResizeTimer;
     window.addEventListener('resize', () => {
-        resizeCanvas();
-        initParticles();
-    });
+        clearTimeout(particleResizeTimer);
+        particleResizeTimer = setTimeout(function () {
+            resizeCanvas();
+            initParticles();
+        }, 150);
+    }, { passive: true });
 
     canvas.addEventListener('mousemove', e => {
         const rect = canvas.getBoundingClientRect();
         mouse.x = e.clientX - rect.left;
         mouse.y = e.clientY - rect.top;
-    });
+    }, { passive: true });
 
-    canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+    canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; }, { passive: true });
 
     resizeCanvas();
     initParticles();
@@ -293,12 +302,25 @@
 
     // ============ PARALLAX SUBTLE EFFECT ON HERO ============
     const heroContent = document.querySelector('.hero-content');
+    var heroParallaxQueued = false;
+    var heroParallaxLastApplied = -1;
     window.addEventListener('scroll', () => {
-        const scrolled = window.scrollY;
-        if (scrolled < window.innerHeight) {
-            heroContent.style.transform = `translateY(${scrolled * 0.25}px)`;
-            heroContent.style.opacity = 1 - scrolled / (window.innerHeight * 0.8);
-        }
+        if (heroParallaxQueued) return;
+        heroParallaxQueued = true;
+        requestAnimationFrame(function () {
+            heroParallaxQueued = false;
+            const scrolled = window.scrollY;
+            const vh = window.innerHeight;
+            if (scrolled < vh) {
+                heroContent.style.transform = `translate3d(0, ${(scrolled * 0.25).toFixed(1)}px, 0)`;
+                heroContent.style.opacity = 1 - scrolled / (vh * 0.8);
+                heroParallaxLastApplied = scrolled;
+            } else if (heroParallaxLastApplied !== -2) {
+                // Reset once we're past the hero so we don't keep recalculating
+                heroContent.style.opacity = '';
+                heroParallaxLastApplied = -2;
+            }
+        });
     }, { passive: true });
 
     // ============ VIVATECH COUNTDOWN TIMER ============
@@ -890,17 +912,35 @@
         canvas.addEventListener('mousedown', function(e) { onStart(e.clientX, e.clientY); });
         window.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
         window.addEventListener('mouseup', onEnd);
+
+        // On touch: allow vertical page scroll until the user clearly drags horizontally.
+        // We track touch start, then decide on first move whether to claim the gesture.
+        var touchStartX = 0, touchStartY = 0, touchClaimed = false;
         canvas.addEventListener('touchstart', function(e) {
-            e.preventDefault();
             var t = e.touches[0];
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+            touchClaimed = false;
             onStart(t.clientX, t.clientY);
-        }, { passive: false });
+        }, { passive: true });
         canvas.addEventListener('touchmove', function(e) {
-            e.preventDefault();
             var t = e.touches[0];
+            var dx = t.clientX - touchStartX;
+            var dy = t.clientY - touchStartY;
+            if (!touchClaimed) {
+                // Need at least 6px movement, and horizontal must dominate to claim drag
+                if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+                if (Math.abs(dy) > Math.abs(dx) * 1.5) {
+                    // Vertical scroll wins; release the gesture
+                    isDragging = false;
+                    return;
+                }
+                touchClaimed = true;
+            }
+            if (e.cancelable) e.preventDefault();
             onMove(t.clientX, t.clientY);
         }, { passive: false });
-        canvas.addEventListener('touchend', onEnd);
+        canvas.addEventListener('touchend', onEnd, { passive: true });
 
         // Hover detection
         canvas.addEventListener('mousemove', function(e) {

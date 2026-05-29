@@ -988,9 +988,6 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 .vivatech-back {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-}
-
-.vivatech-back {
     position: absolute;
     inset: 0;
     transform: rotateY(180deg);
@@ -1399,9 +1396,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 .gyro-active .project-card,
 .gyro-active .lang-card,
 .gyro-active .contact-card,
-.gyro-active .timeline-content,
-.gyro-active .vivatech-card,
-.gyro-active .badge-content {
+.gyro-active .timeline-content {
     transform: perspective(900px) rotateX(var(--gyro-rx, 0deg)) rotateY(var(--gyro-ry, 0deg));
     transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     transform-style: preserve-3d;
@@ -2232,4 +2227,10 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 @media (max-width: 768px) {
     .share-qr { width: 220px; height: 220px; }
     .share-fab { bottom: 80px; }
+    /* On mobile, move the footer refresh button to the LEFT side
+       so it does not collide with the fixed share FAB at the right. */
+    .hard-refresh-btn { right: auto; left: 20px; }
+    @keyframes spinRefresh {
+        to { transform: translateY(50%) rotate(360deg); }
+    }
 }

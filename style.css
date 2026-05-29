@@ -988,6 +988,24 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 .vivatech-back {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+}
+
+.vivatech-front {
+    position: relative;
+    background: var(--bg-card);
+    border-radius: calc(var(--radius) - 2px);
+    padding: 36px 32px;
+    opacity: 1;
+    transition: opacity 0.3s ease 0.35s;
+}
+
+.vivatech-card.flipped .vivatech-front {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.vivatech-back {
     position: absolute;
     inset: 0;
     transform: rotateY(180deg);
@@ -998,6 +1016,15 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     border-radius: calc(var(--radius) - 2px);
     padding: 28px 20px;
     overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.vivatech-card.flipped .vivatech-back {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.3s ease 0.35s;
 }
 
 .badge-tap-hint {
@@ -1346,23 +1373,25 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 }
 
 .hard-refresh-btn {
-    position: absolute;
-    right: 20px;
-    bottom: 50%;
-    transform: translateY(50%);
-    width: 32px;
-    height: 32px;
+    position: fixed;
+    bottom: 16px;
+    left: 130px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     border: 1px solid var(--border);
-    background: rgba(255,255,255,.03);
-    color: var(--text-muted);
-    font-size: 1.1rem;
+    background: rgba(14,14,24,.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--text-primary);
+    font-size: 1.2rem;
     cursor: pointer;
     transition: all var(--transition);
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
+    z-index: 999;
 }
 
 .hard-refresh-btn:hover {
@@ -2229,7 +2258,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     .share-fab { bottom: 80px; }
     /* On mobile, move the footer refresh button to the LEFT side
        so it does not collide with the fixed share FAB at the right. */
-    .hard-refresh-btn { right: auto; left: 20px; }
+    .hard-refresh-btn { left: 120px; bottom: 16px; }
     @keyframes spinRefresh {
         to { transform: translateY(50%) rotate(360deg); }
     }

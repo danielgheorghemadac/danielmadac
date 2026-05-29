@@ -288,14 +288,17 @@
     var refreshBtn = document.getElementById('hardRefresh');
     if (refreshBtn) {
         refreshBtn.addEventListener('click', function () {
+            // Bust the cache by appending a unique query param so HTML + assets reload fresh
+            function bustReload() {
+                var base = window.location.pathname;
+                window.location.replace(base + '?t=' + Date.now() + window.location.hash);
+            }
             if ('caches' in window) {
                 caches.keys().then(function (names) {
-                    names.forEach(function (name) { caches.delete(name); });
-                }).then(function () {
-                    window.location.reload(true);
-                });
+                    return Promise.all(names.map(function (name) { return caches.delete(name); }));
+                }).then(bustReload).catch(bustReload);
             } else {
-                window.location.href = window.location.pathname + '?t=' + Date.now();
+                bustReload();
             }
         });
     }
@@ -409,10 +412,10 @@
             card.addEventListener('mousemove', function (e) {
                 card._touching = true;
                 applyTilt(card, e.clientX, e.clientY);
-            });
+            }, { passive: true });
             card.addEventListener('mouseleave', function () {
                 resetTilt(card);
-            });
+            }, { passive: true });
 
             card.addEventListener('touchstart', function (e) {
                 isTilting = true;
@@ -536,12 +539,12 @@
                 visible = true;
                 glow.style.opacity = '1';
             }
-        });
+        }, { passive: true });
 
         document.addEventListener('mouseleave', function () {
             visible = false;
             glow.style.opacity = '0';
-        });
+        }, { passive: true });
 
         function lerpGlow() {
             currentX += (targetX - currentX) * 0.15;
@@ -647,8 +650,9 @@
         }
 
         function draw(t) {
-            var w = parseFloat(canvas.style.width);
-            var h = parseFloat(canvas.style.height);
+            // Use the cached display size to avoid reading style every frame
+            var w = size;
+            var h = size;
             var cx = w / 2, cy = h / 2;
             var R = Math.min(w, h) * 0.32;
 
@@ -942,17 +946,18 @@
         }, { passive: false });
         canvas.addEventListener('touchend', onEnd, { passive: true });
 
-        // Hover detection
+        // Hover detection (use cached size, passive since we don't preventDefault)
         canvas.addEventListener('mousemove', function(e) {
             var rect = canvas.getBoundingClientRect();
             var mx = e.clientX - rect.left;
             var my = e.clientY - rect.top;
-            var w = parseFloat(canvas.style.width);
-            var h = parseFloat(canvas.style.height);
+            var w = size;
+            var h = size;
             var cx = w / 2, cy = h / 2;
             var R = Math.min(w, h) * 0.32;
             var found = -1;
-            nodes.forEach(function(node, i) {
+            for (var i = 0; i < nodes.length; i++) {
+                var node = nodes[i];
                 var r = (node.value / 100) * 1.0;
                 var x = Math.cos(node.phi) * Math.cos(node.lat) * r;
                 var y = Math.sin(node.lat) * r;
@@ -960,15 +965,16 @@
                 var p = project(x, y, z);
                 var sx = cx + p.x * R;
                 var sy = cy + p.y * R;
-                if (Math.hypot(mx - sx, my - sy) < 20) found = i;
-            });
+                if (Math.hypot(mx - sx, my - sy) < 20) { found = i; break; }
+            }
             if (found !== hoveredIndex) {
                 hoveredIndex = found;
-                legendContainer.querySelectorAll('.radar-legend-item').forEach(function(li, i) {
-                    li.classList.toggle('active', i === found);
-                });
+                var items = legendContainer.querySelectorAll('.radar-legend-item');
+                for (var k = 0; k < items.length; k++) {
+                    items[k].classList.toggle('active', k === found);
+                }
             }
-        });
+        }, { passive: true });
 
         // Legend
         skills.forEach(function(skill, idx) {
@@ -1040,8 +1046,12 @@
             });
         })();
 
-        // Resize
-        window.addEventListener('resize', function() { size = setupCanvas(); });
+        // Resize (debounced to avoid layout thrash + repeated DPR scaling)
+        var skillResizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(skillResizeTimer);
+            skillResizeTimer = setTimeout(function() { size = setupCanvas(); }, 150);
+        }, { passive: true });
 
         // Kick off
         for (var i = 0; i < 8; i++) spawnPacket();
@@ -1074,9 +1084,25 @@
             }, 700);
         }
 
+        // Track touch movement so a scroll gesture does not flip the badge
+        var badgeTouchX = 0, badgeTouchY = 0, badgeTouchMoved = false;
+        card.addEventListener('touchstart', function(e) {
+            var t = e.touches[0];
+            badgeTouchX = t.clientX;
+            badgeTouchY = t.clientY;
+            badgeTouchMoved = false;
+        }, { passive: true });
+        card.addEventListener('touchmove', function(e) {
+            var t = e.touches[0];
+            if (Math.abs(t.clientX - badgeTouchX) > 10 || Math.abs(t.clientY - badgeTouchY) > 10) {
+                badgeTouchMoved = true;
+            }
+        }, { passive: true });
+
         card.addEventListener('click', function(e) {
             if (card.classList.contains('flipped')) return;
             if (e.target.closest('button, input, form')) return;
+            if (badgeTouchMoved) { badgeTouchMoved = false; return; }
             flip();
         });
 
@@ -1442,11 +1468,15 @@
             // Hide loader
             if (loading) loading.classList.add('hidden');
 
-            // Resize handling
+            // Resize handling (debounced)
+            var globeResizeTimer;
             window.addEventListener('resize', function() {
-                var s = container.clientWidth;
-                renderer.setSize(s, s, false);
-            });
+                clearTimeout(globeResizeTimer);
+                globeResizeTimer = setTimeout(function() {
+                    var s = container.clientWidth;
+                    renderer.setSize(s, s, false);
+                }, 150);
+            }, { passive: true });
         }
     })();
 
@@ -1474,10 +1504,27 @@
             inner.appendChild(back);
             card.appendChild(inner);
 
+            // Track touch movement so a scroll gesture does not flip the card
+            var touchStartX = 0, touchStartY = 0, touchMoved = false;
+            card.addEventListener('touchstart', function(e) {
+                var t = e.touches[0];
+                touchStartX = t.clientX;
+                touchStartY = t.clientY;
+                touchMoved = false;
+            }, { passive: true });
+            card.addEventListener('touchmove', function(e) {
+                var t = e.touches[0];
+                if (Math.abs(t.clientX - touchStartX) > 10 || Math.abs(t.clientY - touchStartY) > 10) {
+                    touchMoved = true;
+                }
+            }, { passive: true });
+
             // Toggle flip on click/tap
             card.addEventListener('click', function(e) {
                 // Don't flip if clicking a link
                 if (e.target.tagName === 'A') return;
+                // Don't flip if the user was scrolling
+                if (touchMoved) { touchMoved = false; return; }
                 card.classList.toggle('flipped');
             });
         });
@@ -1594,13 +1641,14 @@
             obs.observe(el);
         });
 
-        // Polyglot: clicked 3+ language switcher buttons
+        // Polyglot: clicked 3+ language switcher buttons.
+        // Use event delegation since the switcher is created later by i18n.js.
         var langs = {};
-        document.querySelectorAll('.lang-switcher-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                langs[btn.dataset.lang] = true;
-                if (Object.keys(langs).length >= 3) unlock('polyglot');
-            });
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest && e.target.closest('.lang-switcher-btn');
+            if (!btn) return;
+            langs[btn.dataset.lang] = true;
+            if (Object.keys(langs).length >= 3) unlock('polyglot');
         });
 
         // Curious: expanded a journey card

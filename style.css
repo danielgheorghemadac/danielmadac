@@ -962,8 +962,12 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     position: relative;
     display: inline-block;
     border-radius: var(--radius);
-    padding: 3px;
-    background: var(--gradient-main);
+    padding: 0;
+    background: transparent;
+    border: 2px solid transparent;
+    background-image: linear-gradient(var(--bg-card), var(--bg-card)), var(--gradient-main);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
     max-width: 420px;
     width: 100%;
     perspective: 1500px;

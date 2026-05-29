@@ -90,6 +90,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
 }
 
 .nav-close { display: none; }
+.nav-refresh { display: none; }
 
 .nav-links a {
     font-size: .875rem;
@@ -963,13 +964,11 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     display: inline-block;
     border-radius: var(--radius);
     padding: 0;
-    background: transparent;
-    border: 2px solid transparent;
-    background-image: linear-gradient(var(--bg-card), var(--bg-card)), var(--gradient-main);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     max-width: 420px;
     width: 100%;
+    margin: 0 auto;
     perspective: 1500px;
     cursor: pointer;
 }
@@ -1187,16 +1186,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     border-color: #ccc;
 }
 
-.badge-glow {
-    position: absolute;
-    inset: -20px;
-    border-radius: 30px;
-    background: var(--gradient-main);
-    opacity: .15;
-    filter: blur(40px);
-    z-index: 0;
-    animation: glowPulse 3s infinite alternate;
-}
+.badge-glow { display: none; }
 
 .badge-content {
     position: relative;
@@ -1372,32 +1362,39 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     position: relative;
 }
 
-.hard-refresh-btn {
-    position: fixed;
-    bottom: 16px;
-    left: 130px;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: rgba(14,14,24,.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all var(--transition);
+.hard-refresh-btn { display: none; }
+
+.nav-refresh {
     display: flex;
     align-items: center;
-    justify-content: center;
-    line-height: 1;
-    z-index: 999;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: 100px;
+    border: 1px solid rgba(68,138,255,.25);
+    background: rgba(68,138,255,.06);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: .85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
 }
 
-.hard-refresh-btn:hover {
+.nav-refresh:hover {
+    background: rgba(68,138,255,.12);
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.nav-refresh:active .nav-refresh-icon {
+    animation: spinRefresh 0.6s ease;
+}
+
+.nav-refresh-icon {
+    display: inline-block;
+    font-size: 1.1rem;
     color: var(--accent-blue);
-    border-color: rgba(68,138,255,.3);
-    background: rgba(68,138,255,.08);
+    line-height: 1;
 }
 
 .hard-refresh-btn:active {
@@ -1850,6 +1847,11 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
         font-size: 1.3rem;
     }
 
+    .nav-refresh {
+        display: inline-flex;
+        margin-top: 20px;
+    }
+
     .lang-switcher {
         position: fixed;
         bottom: 16px;
@@ -2258,7 +2260,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; }
     .share-fab { bottom: 80px; }
     /* On mobile, move the footer refresh button to the LEFT side
        so it does not collide with the fixed share FAB at the right. */
-    .hard-refresh-btn { left: 120px; bottom: 16px; }
+    .nav-refresh { font-size: 1rem; padding: 14px 26px; }
     @keyframes spinRefresh {
         to { transform: translateY(50%) rotate(360deg); }
     }

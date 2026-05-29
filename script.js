@@ -284,15 +284,13 @@
         });
     })();
 
-    // ============ HARD REFRESH BUTTON ============
-    var refreshBtn = document.getElementById('hardRefresh');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function () {
-            // Bust the cache by appending a unique query param so HTML + assets reload fresh
-            function bustReload() {
-                var base = window.location.pathname;
-                window.location.replace(base + '?t=' + Date.now() + window.location.hash);
-            }
+    // ============ HARD REFRESH (in nav menu) ============
+    (function initRefresh() {
+        function bustReload() {
+            var base = window.location.pathname;
+            window.location.replace(base + '?t=' + Date.now());
+        }
+        function doRefresh() {
             if ('caches' in window) {
                 caches.keys().then(function (names) {
                     return Promise.all(names.map(function (name) { return caches.delete(name); }));
@@ -300,8 +298,13 @@
             } else {
                 bustReload();
             }
+        }
+        var ids = ['navRefresh', 'hardRefresh'];
+        ids.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('click', function (e) { e.stopPropagation(); doRefresh(); });
         });
-    }
+    })();
 
     // ============ PARALLAX SUBTLE EFFECT ON HERO ============
     const heroContent = document.querySelector('.hero-content');
